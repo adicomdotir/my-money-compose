@@ -2,14 +2,8 @@ package ir.adicom.mymoney
 
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 import ir.adicom.mymoney.di.AppContainer
 
-class MyMoneyApplication : Application() {
-
-    lateinit var container: AppContainer
-
-    override fun onCreate() {
-        super.onCreate()
-        container = AppContainer(this)
-    }
-}
+@HiltAndroidApp
+class MyMoneyApplication : Application() {}
