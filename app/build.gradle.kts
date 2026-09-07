@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    id("com.google.dagger.hilt.android") // <- Make sure this is present
 }
 
 android {
@@ -55,7 +56,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-//    ksp(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 //    kapt("androidx.room:room-compiler:2.6.1")
 
     // Coroutines
@@ -63,9 +64,9 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.60.1")
-//    ksp("com.google.dagger:hilt-compiler:2.60.1")
+    ksp("com.google.dagger:hilt-compiler:2.60.1")
 
-
+    implementation(libs.androidx.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

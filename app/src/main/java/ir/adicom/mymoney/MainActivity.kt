@@ -11,11 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import ir.adicom.mymoney.data.repository.CategoryRepository
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
 import ir.adicom.mymoney.viewmodel.CategoryViewModel
-import ir.adicom.mymoney.viewmodel.ViewModelFactory
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -37,9 +38,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(name: String, modifier: Modifier = Modifier, viewModel: CategoryViewModel = hiltViewModel()) {
+    val state = viewModel.isLoading.collectAsStateWithLifecycle()
     Text(
-        text = "Hello $name!",
+        text = "Hello $name! $state",
         modifier = modifier
     )
 }
