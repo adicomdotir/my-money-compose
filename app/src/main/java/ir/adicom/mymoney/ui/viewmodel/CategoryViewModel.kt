@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.viewmodel
+package ir.adicom.mymoney.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

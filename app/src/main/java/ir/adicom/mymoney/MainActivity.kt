@@ -7,16 +7,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import ir.adicom.mymoney.data.repository.CategoryRepository
+import ir.adicom.mymoney.ui.screens.HomeScreen
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
-import ir.adicom.mymoney.viewmodel.CategoryViewModel
+import ir.adicom.mymoney.ui.viewmodel.CategoryViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -26,30 +28,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyMoneyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
+                ) {
+                    // HomeScreen تمام navigation کو handle کرتا ہے
+                    HomeScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier, viewModel: CategoryViewModel = hiltViewModel()) {
-    val state = viewModel.isLoading.collectAsStateWithLifecycle()
-    Text(
-        text = "Hello $name! $state",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyMoneyTheme {
-        Greeting("Android")
     }
 }
