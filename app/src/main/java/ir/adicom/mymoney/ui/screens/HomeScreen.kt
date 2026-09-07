@@ -20,10 +20,9 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.ui.unit.dp
-import com.example.expensetracker.ui.screens.CategoryScreen
 
 /**
- * HomeScreen - مرکزی صفحہ جس میں navigation ہے
+ * HomeScreen - صفحه خانه
  */
 @Composable
 fun HomeScreen() {
@@ -43,18 +42,18 @@ fun HomeScreen() {
                 .padding(innerPadding)
         ) {
             when (selectedTab) {
-                0 -> DashboardScreen()           // صفحہ اصلی
-                1 -> CategoryScreen()            // دسته‌بندی
-                2 -> ExpenseListScreen()         // هزینے
-                3 -> ReportsScreen()             // رپورٹس
-                4 -> SettingsScreen()            // ترتیبات
+                0 -> DashboardScreen()      // صفحه خانه
+                1 -> CategoryScreen()       // دسته‌بندی‌ها
+                2 -> ExpenseListScreen()    // هزینه‌ها
+                3 -> ReportsScreen()        // گزارش‌ها
+                4 -> SettingsScreen()       // تنظیمات
             }
         }
     }
 }
 
 /**
- * BottomNavigationBar - نیچے کی navigation
+ * BottomNavigationBar - نوار ناوبری پایین
  */
 @Composable
 fun BottomNavigationBar(
@@ -65,8 +64,8 @@ fun BottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == 0,
             onClick = { onTabSelected(0) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "صفحہ اصلی") },
-            label = { Text("صفحہ اصلی") }
+            icon = { Icon(Icons.Default.Home, contentDescription = "خانه") },
+            label = { Text("خانه") }
         )
 
         NavigationBarItem(
@@ -79,28 +78,28 @@ fun BottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == 2,
             onClick = { onTabSelected(2) },
-            icon = { Icon(Icons.Default.List, contentDescription = "هزینے") },
-            label = { Text("هزینے") }
+            icon = { Icon(Icons.Default.List, contentDescription = "هزینه‌ها") },
+            label = { Text("هزینه‌ها") }
         )
 
         NavigationBarItem(
             selected = selectedTab == 3,
             onClick = { onTabSelected(3) },
-            icon = { Icon(Icons.Default.List, contentDescription = "رپورٹس") },
-            label = { Text("رپورٹس") }
+            icon = { Icon(Icons.Default.List, contentDescription = "گزارش‌ها") },
+            label = { Text("گزارش‌ها") }
         )
 
         NavigationBarItem(
             selected = selectedTab == 4,
             onClick = { onTabSelected(4) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "ترتیبات") },
-            label = { Text("ترتیبات") }
+            icon = { Icon(Icons.Default.Settings, contentDescription = "تنظیمات") },
+            label = { Text("تنظیمات") }
         )
     }
 }
 
 /**
- * DashboardScreen - صفحہ اصلی (ابھی خالی ہے)
+ * DashboardScreen - صفحه خانه
  */
 @Composable
 fun DashboardScreen() {
@@ -110,15 +109,15 @@ fun DashboardScreen() {
             .padding(16.dp)
     ) {
         Text(
-            "صفحہ اصلی",
+            "خانه",
             style = MaterialTheme.typography.headlineMedium
         )
-        Text("یہاں خلاصہ نمایا جائے گا")
+        Text("خلاصه هزینه‌های شما اینجا نمایش داده می‌شود")
     }
 }
 
 /**
- * ExpenseListScreen - هزینے کی لیست (ابھی خالی ہے)
+ * ExpenseListScreen - صفحه هزینه‌ها
  */
 @Composable
 fun ExpenseListScreen() {
@@ -128,15 +127,15 @@ fun ExpenseListScreen() {
             .padding(16.dp)
     ) {
         Text(
-            "هزینے",
+            "هزینه‌ها",
             style = MaterialTheme.typography.headlineMedium
         )
-        Text("یہاں هزینے کی لیست ہوگی")
+        Text("لیست هزینه‌های شما اینجا نمایش داده می‌شود")
     }
 }
 
 /**
- * ReportsScreen - رپورٹس (ابھی خالی ہے)
+ * ReportsScreen - صفحه گزارش‌ها
  */
 @Composable
 fun ReportsScreen() {
@@ -146,15 +145,15 @@ fun ReportsScreen() {
             .padding(16.dp)
     ) {
         Text(
-            "رپورٹس",
+            "گزارش‌ها",
             style = MaterialTheme.typography.headlineMedium
         )
-        Text("یہاں رپورٹس ہوں گی")
+        Text("گزارش‌های تفصیلی اینجا نمایش داده می‌شود")
     }
 }
 
 /**
- * SettingsScreen - ترتیبات (ابھی خالی ہے)
+ * SettingsScreen - صفحه تنظیمات
  */
 @Composable
 fun SettingsScreen() {
@@ -164,9 +163,9 @@ fun SettingsScreen() {
             .padding(16.dp)
     ) {
         Text(
-            "ترتیبات",
+            "تنظیمات",
             style = MaterialTheme.typography.headlineMedium
         )
-        Text("یہاں ترتیبات ہوں گی")
+        Text("تنظیمات اپلیکیشن اینجا قرار خواهد گرفت")
     }
 }

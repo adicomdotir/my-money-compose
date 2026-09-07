@@ -1,4 +1,4 @@
-package com.example.expensetracker.ui.screens
+package ir.adicom.mymoney.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,8 +45,9 @@ import ir.adicom.mymoney.data.entity.Category
 import ir.adicom.mymoney.ui.components.CategoryFormDialog
 import ir.adicom.mymoney.ui.viewmodel.CategoryViewModel
 
+
 /**
- * CategoryScreen - دسته‌بندی کی لیست اور مدیریت
+ * CategoryScreen - صفحه دسته‌بندی
  */
 @Composable
 fun CategoryScreen(
@@ -74,15 +76,20 @@ fun CategoryScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "دسته‌بندی",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
                 text = "${categories.size} مورد",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Text(
+                text = "دسته‌بندی‌ها",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+            IconButton(onClick = {
+                showFormDialog = true
+            }) {
+                Icon(Icons.Default.Add, "")
+            }
         }
 
         // Error Message
@@ -99,14 +106,8 @@ fun CategoryScreen(
                         .background(MaterialTheme.colorScheme.errorContainer)
                         .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = errorMessage!!,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.weight(1f)
-                    )
                     Text(
                         text = "✕",
                         modifier = Modifier
@@ -115,6 +116,12 @@ fun CategoryScreen(
                             }
                             .padding(8.dp),
                         color = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = errorMessage!!,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -142,12 +149,12 @@ fun CategoryScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "کوئی دسته‌بندی نہیں",
+                        text = "دسته‌بندی وجود ندارد",
                         style = MaterialTheme.typography.titleMedium
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "اپنا پہلا دسته‌بندی شامل کرنے کے لیے اوپر کے بٹن پر کلک کریں",
+                        text = "اولین دسته‌بندی خود را اضافه کنید",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -184,7 +191,7 @@ fun CategoryScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        contentAlignment = Alignment.BottomEnd
+        contentAlignment = Alignment.BottomStart
     ) {
         FloatingActionButton(
             onClick = {
@@ -196,7 +203,7 @@ fun CategoryScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "دسته‌بندی شامل کریں"
+                contentDescription = "اضافه کردن"
             )
         }
     }
@@ -224,7 +231,7 @@ fun CategoryScreen(
 }
 
 /**
- * CategoryListItem - ایک دسته‌بندی کی item
+ * CategoryListItem - یک مورد دسته‌بندی
  */
 @Composable
 fun CategoryListItem(
@@ -242,67 +249,62 @@ fun CategoryListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // رنگ اور نام
-            Row(
-                modifier = Modifier
-                    .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // رنگ Box
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = Color(android.graphics.Color.parseColor(category.color)),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                )
-
-                // نام
-                Column {
-                    Text(
-                        text = category.title,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "شناخت: ${category.id}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
             // Actions
             Row {
-                IconButton(
-                    onClick = onEdit,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "ترمیم کریں",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-
                 IconButton(
                     onClick = onDelete,
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "حذف کریں",
+                        contentDescription = "حذف",
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
+
+                IconButton(
+                    onClick = onEdit,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "ویرایش",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // نام
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = category.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "شناسه: ${category.id}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // رنگ Box
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(
+                        color = Color(android.graphics.Color.parseColor(category.color)),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+            )
         }
     }
 }

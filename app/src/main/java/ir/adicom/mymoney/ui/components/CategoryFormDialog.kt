@@ -32,9 +32,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 
 /**
- * CategoryFormDialog - دسته‌بندی شامل/ترمیم کے لیے Dialog
+ * CategoryFormDialog - دیالوگ دسته‌بندی
  */
 @Composable
 fun CategoryFormDialog(
@@ -47,25 +48,25 @@ fun CategoryFormDialog(
     var title by remember { mutableStateOf(category?.title ?: "") }
     var selectedColor by remember { mutableStateOf(category?.color ?: "#FF5733") }
 
-    // رنگوں کی فہرست
+    // رنگ‌های از پیش تعریف شده
     val predefinedColors = listOf(
-        "#FF5733" to "سرخ",      // Red
-        "#FFC300" to "پیلا",      // Yellow
-        "#33FF57" to "سبز",      // Green
-        "#3366FF" to "نیلا",      // Blue
-        "#FF33F5" to "بنفشی",     // Purple
-        "#33FFF5" to "فیروزہ",    // Cyan
-        "#FF9800" to "نارنجی",    // Orange
-        "#9C27B0" to "گہرا بنفشی", // Deep Purple
-        "#2196F3" to "روشن نیلا",  // Light Blue
-        "#4CAF50" to "درخت سبز"   // Tree Green
+        "#FF5733" to "قرمز",
+        "#FFC300" to "زرد",
+        "#33FF57" to "سبز",
+        "#3366FF" to "آبی",
+        "#FF33F5" to "بنفش",
+        "#33FFF5" to "فیروزه‌ای",
+        "#FF9800" to "نارنجی",
+        "#9C27B0" to "بنفش گیاه",
+        "#2196F3" to "آبی روشن",
+        "#4CAF50" to "سبز درخت"
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = if (isEditMode) "دسته‌بندی میں ترمیم" else "نیا دسته‌بندی",
+                text = if (isEditMode) "ویرایش دسته‌بندی" else "دسته‌بندی جدید",
                 fontWeight = FontWeight.Bold
             )
         },
@@ -78,7 +79,7 @@ fun CategoryFormDialog(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("دسته‌بندی کا نام") },
+                    label = { Text("نام دسته‌بندی") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
@@ -90,7 +91,7 @@ fun CategoryFormDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "رنگ منتخب کریں",
+                        text = "انتخاب رنگ",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Medium
                     )
@@ -113,7 +114,7 @@ fun CategoryFormDialog(
                     OutlinedTextField(
                         value = selectedColor,
                         onValueChange = { selectedColor = it },
-                        label = { Text("کسٹم رنگ (Hex: #RRGGBB)") },
+                        label = { Text("رنگ سفارشی (Hex: #RRGGBB)") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii)
@@ -129,7 +130,7 @@ fun CategoryFormDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "پیش نظارہ:",
+                        text = selectedColor,
                         style = MaterialTheme.typography.labelSmall
                     )
                     Box(
@@ -150,14 +151,14 @@ fun CategoryFormDialog(
                             )
                     )
                     Text(
-                        text = selectedColor,
+                        text = "پیش‌نمایش:",
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
             }
         },
         confirmButton = {
-            Button(
+            TextButton(
                 onClick = {
                     if (title.isNotBlank()) {
                         onSave(title, selectedColor)
@@ -165,12 +166,12 @@ fun CategoryFormDialog(
                 },
                 enabled = title.isNotBlank()
             ) {
-                Text(if (isEditMode) "اپ ڈیٹ" else "شامل کریں")
+                Text(if (isEditMode) "به‌روزرسانی" else "اضافه کردن")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("منسوخ")
+                Text("لغو")
             }
         },
         modifier = Modifier.fillMaxWidth(0.9f)
@@ -178,7 +179,7 @@ fun CategoryFormDialog(
 }
 
 /**
- * ColorOption - رنگ کی ایک option
+ * ColorOption - یک گزینه رنگ
  */
 @Composable
 fun ColorOption(
@@ -199,7 +200,7 @@ fun ColorOption(
                 .size(if (isSelected) 48.dp else 40.dp)
                 .background(
                     color = try {
-                        Color(android.graphics.Color.parseColor(color))
+                        Color(color.toColorInt())
                     } catch (e: Exception) {
                         Color.Gray
                     },
