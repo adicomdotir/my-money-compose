@@ -32,8 +32,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
-                    // HomeScreen تمام navigation کو handle کرتا ہے
-                    HomeScreen()
+                    val repository = TransactionRepository()
+                    val viewModel = TransactionViewModel(repository)
+                    TransactionScreen(viewModel = viewModel)
                 }
             }
         }

@@ -138,7 +138,7 @@ fun CategoryFormDialog(
                             .size(40.dp)
                             .background(
                                 color = try {
-                                    Color(android.graphics.Color.parseColor(selectedColor))
+                                    Color(selectedColor.toColorInt())
                                 } catch (e: Exception) {
                                     Color.Gray
                                 },
