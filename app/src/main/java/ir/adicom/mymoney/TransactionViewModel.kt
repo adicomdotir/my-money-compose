@@ -2,11 +2,20 @@ package ir.adicom.mymoney
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+sealed interface OperationState {
+    data object Idle : OperationState
+    data object Adding : OperationState
+    data object Deleting : OperationState
+    data class Error(val message: String) : OperationState
+}
 
 class TransactionViewModel(
     private val repository: TransactionRepository
@@ -37,6 +46,9 @@ class TransactionViewModel(
             )
         )
 
+    private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
+    val operationState = _operationState.asStateFlow()
+
     fun onEvent(event: TransactionEvent) {
         when (event) {
             is TransactionEvent.AddTransaction -> {
@@ -56,7 +68,15 @@ class TransactionViewModel(
 
     private fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            repository.deleteTransaction(transaction)
+            _operationState.value = OperationState.Deleting
+
+            try {
+                repository.deleteTransaction(transaction)
+                _operationState.value = OperationState.Idle
+            } catch (e: Exception) {
+                _operationState.value =
+                    OperationState.Error(e.message ?: "Unknown error")
+            }
         }
     }
 
@@ -67,16 +87,23 @@ class TransactionViewModel(
         type: TransactionType
     ) {
         viewModelScope.launch {
-            val transaction = Transaction(
-                id = 0L,
-                title = title,
-                category = category,
-                amount = amount,
-                type = type
-            )
-            repository.addTransaction(
-                transaction
-            )
+            _operationState.value = OperationState.Adding
+            try {
+                val transaction = Transaction(
+                    id = 0L,
+                    title = title,
+                    category = category,
+                    amount = amount,
+                    type = type
+                )
+                repository.addTransaction(
+                    transaction
+                )
+                _operationState.value = OperationState.Idle
+            } catch (e: Exception) {
+                _operationState.value =
+                    OperationState.Error(e.message ?: "Unknown error")
+            }
         }
     }
 }
