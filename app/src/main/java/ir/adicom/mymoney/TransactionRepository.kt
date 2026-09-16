@@ -2,6 +2,7 @@ package ir.adicom.mymoney
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 fun getFakeData(): List<Transaction> {
     return listOf(
@@ -37,7 +38,10 @@ fun getFakeData(): List<Transaction> {
 }
 
 class TransactionRepository {
-    fun getTransactions(): List<Transaction> = getFakeData()
+    suspend fun getTransactions(): List<Transaction> {
+//        throw IOException("Network error")
+        return getFakeData()
+    }
 
     fun addTransaction(
         transaction: Transaction

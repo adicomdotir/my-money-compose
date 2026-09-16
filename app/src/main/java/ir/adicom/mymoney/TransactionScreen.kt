@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
@@ -36,12 +37,25 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         Text("This Month")
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-            items(uiState.transactions) {
-                TransactionItem(it)
+
+        if (!uiState.error.isNullOrBlank()) {
+            Text("${uiState.error}")
+        } else
+
+        if (uiState.isLoading) {
+            CircularProgressIndicator()
+        } else
+
+        if (uiState.transactions.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                items(uiState.transactions) {
+                    TransactionItem(it)
+                }
             }
+        } else {
+            Text("No Content")
         }
 
         Text("Add Transaction")

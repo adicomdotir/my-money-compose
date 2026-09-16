@@ -46,13 +46,19 @@ class TransactionViewModel(
 
     private fun getTransaction() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
-            val result = repository.getTransactions()
-            val balance =
-                result.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
-            _state.value =
-                _state.value.copy(isLoading = false, transactions = result, balance = balance)
+           try {
+               _state.value = _state.value.copy(isLoading = true)
+               val result = repository.getTransactions()
+               val balance =
+                   result.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
+               _state.value =
+                   _state.value.copy(isLoading = false, transactions = result, balance = balance)
 
+           } catch (e: Exception) {
+               _state.value =
+                   _state.value.copy(isLoading = false, error = e.message)
+
+           }
         }
     }
 
