@@ -23,5 +23,7 @@ fun TransactionEntity.toDomain(): Transaction = Transaction(
     title = title,
     category = category,
     amount = amount,
-    type = TransactionType.valueOf(type)
+    type = runCatching {
+        TransactionType.valueOf(type)
+    }.getOrDefault(TransactionType.EXPENSE)
 )

@@ -21,4 +21,8 @@ class TransactionRepository(
     ) {
         transactionDao.addTransaction(transaction.toEntity())
     }
+
+    suspend fun deleteTransaction(transaction: Transaction) {
+        transactionDao.deleteTransaction(transaction.toEntity())
+    }
 }

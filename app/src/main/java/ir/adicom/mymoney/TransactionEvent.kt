@@ -7,4 +7,6 @@ sealed interface TransactionEvent {
         val amount: Double,
         val type: TransactionType
     ) : TransactionEvent
+
+    data class DeleteTransaction(val transaction: Transaction) : TransactionEvent
 }
