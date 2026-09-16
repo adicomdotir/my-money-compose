@@ -14,7 +14,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,9 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewModel) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
-        viewModel.onEvent(TransactionEvent.LoadTransactions)
-    }
 
     Column(
         modifier = modifier.fillMaxSize()
