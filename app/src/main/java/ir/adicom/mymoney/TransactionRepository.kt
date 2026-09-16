@@ -1,51 +1,24 @@
 package ir.adicom.mymoney
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import java.io.IOException
+import ir.adicom.mymoney.data.dao.TransactionDao
+import ir.adicom.mymoney.data.entity.TransactionEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-fun getFakeData(): List<Transaction> {
-    return listOf(
-        Transaction(
-            id = 1,
-            title = "Lunch",
-            category = "Food",
-            amount = 15.0,
-            type = TransactionType.EXPENSE,
-        ),
-        Transaction(
-            id = 1,
-            title = "Uber",
-            category = "Transport",
-            amount = 22.0,
-            type = TransactionType.EXPENSE,
-        ),
-        Transaction(
-            id = 1,
-            title = "Company",
-            category = "Salary",
-            amount = 3000.0,
-            type = TransactionType.INCOME,
-        ),
-        Transaction(
-            id = 1,
-            title = "Amazon",
-            category = "Shopping",
-            amount = 80.0,
-            type = TransactionType.EXPENSE,
-        ),
-    )
-}
 
-class TransactionRepository {
-    suspend fun getTransactions(): List<Transaction> {
-//        throw IOException("Network error")
-        return getFakeData()
+class TransactionRepository(
+    private val transactionDao: TransactionDao
+) {
+    fun getTransactions(): Flow<List<Transaction>> {
+        return transactionDao.getAllTransactions()
+            .map { entities ->
+                entities.map(TransactionEntity::toDomain)
+            }
     }
 
-    fun addTransaction(
+    suspend fun addTransaction(
         transaction: Transaction
     ) {
-
+        transactionDao.addTransaction(transaction.toEntity())
     }
 }

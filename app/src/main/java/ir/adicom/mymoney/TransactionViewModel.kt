@@ -3,19 +3,11 @@ package ir.adicom.mymoney
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-sealed interface TransactionEvent {
-    data object LoadTransactions : TransactionEvent
-    data class AddTransaction(
-        val title: String,
-        val category: String,
-        val amount: Double,
-        val type: TransactionType
-    ) : TransactionEvent
-}
 
 class TransactionViewModel(
     private val repository: TransactionRepository
@@ -47,10 +39,11 @@ class TransactionViewModel(
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true)
-                val result = repository.getTransactions()
-                _state.value =
-                    _state.value.copy(isLoading = false, transactions = result, error = null)
-
+                val result= repository.getTransactions().stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(5_000),
+                    initialValue = emptyList()
+                )
             } catch (e: Exception) {
                 _state.value =
                     _state.value.copy(isLoading = false, error = e.message)
@@ -67,7 +60,7 @@ class TransactionViewModel(
     ) {
         viewModelScope.launch {
             val transaction = Transaction(
-                id = System.currentTimeMillis(),
+                id = 0L,
                 title = title,
                 category = category,
                 amount = amount,
