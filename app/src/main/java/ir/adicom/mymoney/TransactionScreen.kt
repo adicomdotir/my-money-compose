@@ -33,7 +33,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         Text("My Money")
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
         Text("Balance")
-        Text("$ ${uiState.balance}")
+        Text("$ ${uiState.transactions.calculateBalance()}")
         Text("This Month")
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
 

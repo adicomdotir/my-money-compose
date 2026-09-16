@@ -23,7 +23,6 @@ class TransactionViewModel(
     private val _state = MutableStateFlow(
         TransactionUiState(
             transactions = listOf(),
-            balance = 0.0,
             isLoading = false,
             error = null
         )
@@ -46,19 +45,17 @@ class TransactionViewModel(
 
     private fun getTransaction() {
         viewModelScope.launch {
-           try {
-               _state.value = _state.value.copy(isLoading = true)
-               val result = repository.getTransactions()
-               val balance =
-                   result.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
-               _state.value =
-                   _state.value.copy(isLoading = false, transactions = result, balance = balance)
+            try {
+                _state.value = _state.value.copy(isLoading = true)
+                val result = repository.getTransactions()
+                _state.value =
+                    _state.value.copy(isLoading = false, transactions = result, error = null)
 
-           } catch (e: Exception) {
-               _state.value =
-                   _state.value.copy(isLoading = false, error = e.message)
+            } catch (e: Exception) {
+                _state.value =
+                    _state.value.copy(isLoading = false, error = e.message)
 
-           }
+            }
         }
     }
 
@@ -82,3 +79,12 @@ class TransactionViewModel(
         }
     }
 }
+
+fun List<Transaction>.calculateBalance(): Double =
+    sumOf {
+        if (it.type == TransactionType.INCOME) {
+            it.amount
+        } else {
+            -it.amount
+        }
+    }
