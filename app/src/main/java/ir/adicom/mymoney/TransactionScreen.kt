@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,11 +23,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewModel) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        viewModel.getTransaction()
+        viewModel.onEvent(TransactionEvent.LoadTransactions)
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Text("My Money")
         HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
@@ -41,6 +42,22 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             items(uiState.transactions) {
                 TransactionItem(it)
             }
+        }
+
+        Text("Add Transaction")
+        Text("Title:        Coffee")
+        Text("Category:     Food")
+        Text("Amount:       5")
+        Text("Type:         Expense")
+        ElevatedButton(onClick = {
+            viewModel.onEvent(TransactionEvent.AddTransaction(
+                title = "Coffee",
+                category = "Food",
+                amount = 5.0,
+                type = TransactionType.EXPENSE,
+            ))
+        }) {
+            Text("Add")
         }
     }
 }
@@ -62,5 +79,5 @@ fun addSignToAmount(transaction: Transaction): String {
     if (transaction.type == TransactionType.INCOME) {
         return "+ $${transaction.amount}"
     }
-    return  "- $${transaction.amount}"
+    return "- $${transaction.amount}"
 }

@@ -7,8 +7,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+sealed interface TransactionEvent {
+    data object LoadTransactions : TransactionEvent
+    data class AddTransaction(
+        val title: String,
+        val category: String,
+        val amount: Double,
+        val type: TransactionType
+    ) : TransactionEvent
+}
+
 class TransactionViewModel(
-    val repository: TransactionRepository
+    private val repository: TransactionRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         TransactionUiState(
@@ -20,16 +30,49 @@ class TransactionViewModel(
     )
     val state: StateFlow<TransactionUiState> = _state.asStateFlow()
 
-    fun getTransaction() {
-        _state.value = _state.value.copy(isLoading = true)
+    fun onEvent(event: TransactionEvent) {
+        when (event) {
+            is TransactionEvent.LoadTransactions -> getTransaction()
+            is TransactionEvent.AddTransaction -> {
+                addTransaction(
+                    title = event.title,
+                    category = event.category,
+                    amount = event.amount,
+                    type = event.type
+                )
+            }
+        }
+    }
+
+    private fun getTransaction() {
         viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
             val result = repository.getTransactions()
             val balance =
-                result.map { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
-                    .reduce { acc, trans -> acc + trans }
+                result.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
             _state.value =
                 _state.value.copy(isLoading = false, transactions = result, balance = balance)
 
+        }
+    }
+
+    private fun addTransaction(
+        title: String,
+        category: String,
+        amount: Double,
+        type: TransactionType
+    ) {
+        viewModelScope.launch {
+            val transaction = Transaction(
+                id = System.currentTimeMillis(),
+                title = title,
+                category = category,
+                amount = amount,
+                type = type
+            )
+            repository.addTransaction(
+                transaction
+            )
         }
     }
 }

@@ -1,5 +1,8 @@
 package ir.adicom.mymoney
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 fun getFakeData(): List<Transaction> {
     return listOf(
         Transaction(
@@ -35,4 +38,10 @@ fun getFakeData(): List<Transaction> {
 
 class TransactionRepository {
     fun getTransactions(): List<Transaction> = getFakeData()
+
+    fun addTransaction(
+        transaction: Transaction
+    ) {
+
+    }
 }
