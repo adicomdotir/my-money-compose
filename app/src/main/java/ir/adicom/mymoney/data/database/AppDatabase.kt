@@ -5,19 +5,21 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.Transaction
 import ir.adicom.mymoney.data.dao.CategoryDao
 import ir.adicom.mymoney.data.dao.ExpenseDao
+import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.entity.Category
 import ir.adicom.mymoney.data.entity.Expense
 
 @Database(
-    entities = [Category::class, Expense::class],
-    version = 1,
+    entities = [Transaction::class],
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun categoryDao(): CategoryDao
-    abstract fun expenseDao(): ExpenseDao
+
+    abstract fun transactionDao(): TransactionDao
 
     companion object {
         @Volatile
