@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,16 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
     var categoryTxtField by remember { mutableStateOf("") }
     var amountTxtField by remember { mutableStateOf("") }
 
+    var titleError by remember {
+        mutableStateOf("")
+    }
+    var categoryError by remember {
+        mutableStateOf("")
+    }
+    var amountError by remember {
+        mutableStateOf("")
+    }
+
     val transactionTypes = TransactionType.entries
     var expanded by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf(TransactionType.EXPENSE) }
@@ -59,7 +70,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
                     titleTxtField = ""
                     categoryTxtField = ""
                     amountTxtField = ""
-                    selectedType= TransactionType.EXPENSE
+                    selectedType = TransactionType.EXPENSE
                 }
             }
         }
@@ -110,18 +121,35 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         }
 
         Text("Add Transaction")
-        AppTextField(label = "Title", value = titleTxtField, onValueChange = {
-            titleTxtField = it
-        })
-        AppTextField(label = "Category", value = categoryTxtField, onValueChange = {
-            categoryTxtField = it
-        })
         AppTextField(
-            label = "Amount", value = amountTxtField, onValueChange = {
+            label = "Title",
+            value = titleTxtField,
+            onValueChange = {
+                titleTxtField = it
+                titleError = ""
+            },
+            error = titleError
+        )
+        AppTextField(
+            label = "Category",
+            value = categoryTxtField,
+            onValueChange = {
+                categoryTxtField = it
+                categoryError = ""
+            },
+            error = categoryError
+        )
+        AppTextField(
+            label = "Amount",
+            value = amountTxtField,
+            onValueChange = {
                 amountTxtField = it
-            }, keyboardOptions = KeyboardOptions(
+                amountError = ""
+            },
+            keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
-            )
+            ),
+            error = amountError
         )
 
 
@@ -164,7 +192,31 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             onClick = {
                 val amount = amountTxtField.toDoubleOrNull()
 
-                if (titleTxtField.isBlank() || categoryTxtField.isBlank() || amount == null || amount <= 0) {
+                var isValid = true
+
+                if (titleTxtField.isBlank()) {
+                    titleError = "Fill title"
+                    isValid = false
+                }
+
+                if (categoryTxtField.isBlank()) {
+                    categoryError = "Fill category"
+                    isValid = false
+                }
+
+                when {
+                    amount == null -> {
+                        amountError = "Fill amount"
+                        isValid = false
+                    }
+
+                    amount <= 0 -> {
+                        amountError = "Invalid amount"
+                        isValid = false
+                    }
+                }
+
+                if (!isValid) {
                     return@ElevatedButton
                 }
 
@@ -172,7 +224,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
                     TransactionEvent.AddTransaction(
                         title = titleTxtField,
                         category = categoryTxtField,
-                        amount = amount,
+                        amount = amount ?: 0.0,
                         type = selectedType,
                     )
                 )
@@ -210,14 +262,21 @@ fun AppTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions()
+    keyboardOptions: KeyboardOptions = KeyboardOptions(),
+    error: String
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        isError = error.isNotEmpty(),
+        supportingText = {
+            if (error.isNotEmpty()) {
+                Text(error)
+            }
+        }
     )
 }
 
