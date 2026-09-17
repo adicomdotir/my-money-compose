@@ -1,10 +1,13 @@
 package ir.adicom.mymoney
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,17 +15,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+@ExperimentalMaterial3Api
 @Composable
 fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewModel) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
@@ -72,19 +85,70 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             is OperationState.Error -> Text(operation.message)
         }
 
+        var titleTxtField by remember { mutableStateOf("") }
+        var categoryTxtField by remember { mutableStateOf("") }
+        var amountTxtField by remember { mutableStateOf("") }
+
         Text("Add Transaction")
-        Text("Title:        Coffee")
-        Text("Category:     Food")
-        Text("Amount:       5")
-        Text("Type:         Expense")
+        AppTextField(label = "Title", value = titleTxtField) {
+            titleTxtField = it
+        }
+        AppTextField(label = "Category", value = categoryTxtField) {
+            categoryTxtField = it
+        }
+        AppTextField(label = "Amount", value = amountTxtField) {
+            amountTxtField = it
+        }
+
+        val transactionTypes = arrayOf("EXPENSE", "INCOME")
+        var expanded by remember { mutableStateOf(false) }
+        var selectedType by remember { mutableStateOf(transactionTypes[0]) }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = !expanded
+                }
+            ) {
+                TextField(
+                    value = selectedType,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    transactionTypes.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(text = item) },
+                            onClick = {
+                                selectedType = item
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
         ElevatedButton(
             onClick = {
+                if (titleTxtField.isBlank() || categoryTxtField.isBlank() || amountTxtField.isBlank()) {
+                    return@ElevatedButton
+                }
                 viewModel.onEvent(
                     TransactionEvent.AddTransaction(
-                        title = "Coffee",
-                        category = "Food",
-                        amount = 5.0,
-                        type = TransactionType.EXPENSE,
+                        title = titleTxtField,
+                        category = categoryTxtField,
+                        amount = amountTxtField.toDoubleOrNull() ?: 0.0,
+                        type = TransactionType.valueOf(selectedType),
                     )
                 )
             },
@@ -92,6 +156,8 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         ) {
             Text("Add")
         }
+
+        Spacer(modifier = Modifier.height(64.dp))
     }
 }
 
@@ -112,6 +178,16 @@ fun TransactionItem(transaction: Transaction, onClick: () -> Unit, deleteEnabled
             }
         }
     }
+}
+
+@Composable
+fun AppTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 fun addSignToAmount(transaction: Transaction): String {
