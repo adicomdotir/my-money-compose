@@ -2,6 +2,7 @@ package ir.adicom.mymoney
 
 import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.entity.TransactionEntity
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -19,10 +20,12 @@ class TransactionRepository(
     suspend fun addTransaction(
         transaction: Transaction
     ) {
+        delay(2000L)
         transactionDao.addTransaction(transaction.toEntity())
     }
 
     suspend fun deleteTransaction(transaction: Transaction) {
+        delay(2000L)
         transactionDao.deleteTransaction(transaction.toEntity())
     }
 }

@@ -2,8 +2,10 @@ package ir.adicom.mymoney
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -15,6 +17,10 @@ sealed interface OperationState {
     data object Adding : OperationState
     data object Deleting : OperationState
     data class Error(val message: String) : OperationState
+}
+
+sealed interface TransactionEffect {
+    data object TransactionAdded : TransactionEffect
 }
 
 class TransactionViewModel(
@@ -48,6 +54,9 @@ class TransactionViewModel(
 
     private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
     val operationState = _operationState.asStateFlow()
+
+    private val _effect = MutableSharedFlow<TransactionEffect>()
+    val effect = _effect.asSharedFlow()
 
     fun onEvent(event: TransactionEvent) {
         when (event) {
@@ -100,6 +109,7 @@ class TransactionViewModel(
                     transaction
                 )
                 _operationState.value = OperationState.Idle
+                _effect.emit(TransactionEffect.TransactionAdded)
             } catch (e: Exception) {
                 _operationState.value =
                     OperationState.Error(e.message ?: "Unknown error")

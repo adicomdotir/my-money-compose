@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,11 +28,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -40,6 +43,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewModel) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
+
+    var titleTxtField by remember { mutableStateOf("") }
+    var categoryTxtField by remember { mutableStateOf("") }
+    var amountTxtField by remember { mutableStateOf("") }
+
+    val transactionTypes = TransactionType.entries
+    var expanded by remember { mutableStateOf(false) }
+    var selectedType by remember { mutableStateOf(TransactionType.EXPENSE) }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { message ->
+            when (message) {
+                TransactionEffect.TransactionAdded -> {
+                    titleTxtField = ""
+                    categoryTxtField = ""
+                    amountTxtField = ""
+                    selectedType= TransactionType.EXPENSE
+                }
+            }
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -85,24 +109,22 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             is OperationState.Error -> Text(operation.message)
         }
 
-        var titleTxtField by remember { mutableStateOf("") }
-        var categoryTxtField by remember { mutableStateOf("") }
-        var amountTxtField by remember { mutableStateOf("") }
-
         Text("Add Transaction")
-        AppTextField(label = "Title", value = titleTxtField) {
+        AppTextField(label = "Title", value = titleTxtField, onValueChange = {
             titleTxtField = it
-        }
-        AppTextField(label = "Category", value = categoryTxtField) {
+        })
+        AppTextField(label = "Category", value = categoryTxtField, onValueChange = {
             categoryTxtField = it
-        }
-        AppTextField(label = "Amount", value = amountTxtField) {
-            amountTxtField = it
-        }
+        })
+        AppTextField(
+            label = "Amount", value = amountTxtField, onValueChange = {
+                amountTxtField = it
+            }, keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            )
+        )
 
-        val transactionTypes = arrayOf("EXPENSE", "INCOME")
-        var expanded by remember { mutableStateOf(false) }
-        var selectedType by remember { mutableStateOf(transactionTypes[0]) }
+
 
         Box(
             modifier = Modifier
@@ -115,7 +137,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
                 }
             ) {
                 TextField(
-                    value = selectedType,
+                    value = selectedType.name,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -128,7 +150,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
                 ) {
                     transactionTypes.forEach { item ->
                         DropdownMenuItem(
-                            text = { Text(text = item) },
+                            text = { Text(text = item.name) },
                             onClick = {
                                 selectedType = item
                                 expanded = false
@@ -140,15 +162,18 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         }
         ElevatedButton(
             onClick = {
-                if (titleTxtField.isBlank() || categoryTxtField.isBlank() || amountTxtField.isBlank()) {
+                val amount = amountTxtField.toDoubleOrNull()
+
+                if (titleTxtField.isBlank() || categoryTxtField.isBlank() || amount == null || amount <= 0) {
                     return@ElevatedButton
                 }
+
                 viewModel.onEvent(
                     TransactionEvent.AddTransaction(
                         title = titleTxtField,
                         category = categoryTxtField,
-                        amount = amountTxtField.toDoubleOrNull() ?: 0.0,
-                        type = TransactionType.valueOf(selectedType),
+                        amount = amount,
+                        type = selectedType,
                     )
                 )
             },
@@ -181,12 +206,18 @@ fun TransactionItem(transaction: Transaction, onClick: () -> Unit, deleteEnabled
 }
 
 @Composable
-fun AppTextField(label: String, value: String, onValueChange: (String) -> Unit) {
+fun AppTextField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions()
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = keyboardOptions
     )
 }
 
