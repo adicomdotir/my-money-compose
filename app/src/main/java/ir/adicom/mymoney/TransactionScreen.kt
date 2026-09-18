@@ -205,24 +205,15 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
         }
         ElevatedButton(
             onClick = {
-                val amount = amountTxtField.toDoubleOrNull()
-
-                val error = TransactionFormError(
-                    title = if (titleTxtField.isBlank()) "Fill title" else null,
-                    category = if (categoryTxtField.isBlank()) "Fill category" else null,
-                    amount = when {
-                        amountTxtField.isBlank() -> "Fill amount"
-                        amount == null -> "Invalid amount"
-                        amount <= 0 -> "Amount must be greater than 0"
-                        else -> null
-                    }
+                formError = validateForm(
+                    title = titleTxtField,
+                    category = categoryTxtField,
+                    amount = amountTxtField
                 )
-
-                formError = error
 
                 hasSubmitted = true
 
-                if (error.title != null || error.category != null || error.amount != null) {
+                if (formError.hasError()) {
                     return@ElevatedButton
                 }
 
@@ -230,7 +221,7 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
                     TransactionEvent.AddTransaction(
                         title = titleTxtField,
                         category = categoryTxtField,
-                        amount = amount ?: 0.0,
+                        amount = amountTxtField.toDoubleOrNull() ?: 0.0,
                         type = selectedType,
                     )
                 )
@@ -285,6 +276,28 @@ fun AppTextField(
         }
     )
 }
+
+fun validateForm(
+    title: String,
+    category: String,
+    amount: String
+): TransactionFormError {
+    val parsedAmount = amount.toDoubleOrNull()
+
+    return TransactionFormError(
+        title = if (title.isBlank()) "Fill title" else null,
+        category = if (category.isBlank()) "Fill category" else null,
+        amount = when {
+            amount.isBlank() -> "Fill amount"
+            parsedAmount == null -> "Invalid amount"
+            parsedAmount <= 0 -> "Amount must be greater than 0"
+            else -> null
+        }
+    )
+}
+
+fun TransactionFormError.hasError(): Boolean =
+    title != null || category != null || amount != null
 
 fun addSignToAmount(transaction: Transaction): String {
     if (transaction.type == TransactionType.INCOME) {
