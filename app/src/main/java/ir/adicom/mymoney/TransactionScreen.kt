@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+data class TransactionFormError(
+    val title: String? = null,
+    val category: String? = null,
+    val amount: String? = null
+)
 
 @ExperimentalMaterial3Api
 @Composable
@@ -49,15 +54,11 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
     var categoryTxtField by remember { mutableStateOf("") }
     var amountTxtField by remember { mutableStateOf("") }
 
-    var titleError by remember {
-        mutableStateOf("")
+    var formError by remember {
+        mutableStateOf(TransactionFormError())
     }
-    var categoryError by remember {
-        mutableStateOf("")
-    }
-    var amountError by remember {
-        mutableStateOf("")
-    }
+
+    var hasSubmitted by remember { mutableStateOf(false) }
 
     val transactionTypes = TransactionType.entries
     var expanded by remember { mutableStateOf(false) }
@@ -126,30 +127,44 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             value = titleTxtField,
             onValueChange = {
                 titleTxtField = it
-                titleError = ""
+
+                if (it.isNotBlank()) {
+                    formError = formError.copy(title = null)
+                }
             },
-            error = titleError
+            error = if (hasSubmitted) formError.title ?: "" else ""
         )
         AppTextField(
             label = "Category",
             value = categoryTxtField,
             onValueChange = {
                 categoryTxtField = it
-                categoryError = ""
+
+                if (it.isNotBlank()) {
+                    formError = formError.copy(category = null)
+                }
             },
-            error = categoryError
+            error = if (hasSubmitted) formError.category ?: "" else ""
         )
         AppTextField(
             label = "Amount",
             value = amountTxtField,
             onValueChange = {
                 amountTxtField = it
-                amountError = ""
+
+                formError = formError.copy(
+                    amount = when {
+                        amountTxtField.isBlank() -> "Fill amount"
+                        amountTxtField.toDoubleOrNull() == null -> "Invalid amount"
+                        amountTxtField.toDouble() <= 0 -> "Amount must be greater than 0"
+                        else -> null
+                    }
+                )
             },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
-            error = amountError
+            error = if (hasSubmitted) formError.amount ?: "" else ""
         )
 
 
@@ -192,31 +207,22 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             onClick = {
                 val amount = amountTxtField.toDoubleOrNull()
 
-                var isValid = true
-
-                if (titleTxtField.isBlank()) {
-                    titleError = "Fill title"
-                    isValid = false
-                }
-
-                if (categoryTxtField.isBlank()) {
-                    categoryError = "Fill category"
-                    isValid = false
-                }
-
-                when {
-                    amount == null -> {
-                        amountError = "Fill amount"
-                        isValid = false
+                val error = TransactionFormError(
+                    title = if (titleTxtField.isBlank()) "Fill title" else null,
+                    category = if (categoryTxtField.isBlank()) "Fill category" else null,
+                    amount = when {
+                        amountTxtField.isBlank() -> "Fill amount"
+                        amount == null -> "Invalid amount"
+                        amount <= 0 -> "Amount must be greater than 0"
+                        else -> null
                     }
+                )
 
-                    amount <= 0 -> {
-                        amountError = "Invalid amount"
-                        isValid = false
-                    }
-                }
+                formError = error
 
-                if (!isValid) {
+                hasSubmitted = true
+
+                if (error.title != null || error.category != null || error.amount != null) {
                     return@ElevatedButton
                 }
 
