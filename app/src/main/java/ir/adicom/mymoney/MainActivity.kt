@@ -14,9 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import ir.adicom.mymoney.data.database.AppDatabase
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
 sealed class AppScreen(val route: String) {
     data object Home : AppScreen("home")
     data object AddTransaction : AppScreen("add_transaction")
+    data object Detail : AppScreen("detail/{id}")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,11 +63,24 @@ fun AppNavHost(
             TransactionScreen(
                 onOpenAdd = {
                     navController.navigate(AppScreen.AddTransaction.route)
+                },
+                onDetailClick = { id ->
+                    navController.navigate("detail/$id")
                 }
             )
         }
         composable(AppScreen.AddTransaction.route) {
             AddTransactionScreen()
+        }
+        composable(
+            AppScreen.Detail.route,
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                }
+            )) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
+            TransactionDetailScreen(id = id)
         }
     }
 

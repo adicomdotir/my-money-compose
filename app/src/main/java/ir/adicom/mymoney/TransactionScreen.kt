@@ -1,5 +1,6 @@
 package ir.adicom.mymoney
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,7 +51,8 @@ data class TransactionFormError(
 fun TransactionScreen(
     modifier: Modifier = Modifier,
     viewModel: TransactionViewModel = hiltViewModel(),
-    onOpenAdd: () -> Unit
+    onOpenAdd: () -> Unit,
+    onDetailClick: (Long) -> Unit,
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
@@ -105,11 +107,14 @@ fun TransactionScreen(
                     LazyColumn(
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(uiState.transactions) {
+                        items(uiState.transactions) { it ->
                             TransactionItem(
                                 transaction = it,
                                 onClick = {
                                     viewModel.onEvent(TransactionEvent.DeleteTransaction(it))
+                                },
+                                onDetailClick = { id ->
+                                    onDetailClick(id)
                                 },
                                 deleteEnabled = operationState !is OperationState.Deleting
                             )
@@ -247,9 +252,18 @@ fun TransactionScreen(
 }
 
 @Composable
-fun TransactionItem(transaction: Transaction, onClick: () -> Unit, deleteEnabled: Boolean) {
+fun TransactionItem(
+    transaction: Transaction,
+    onClick: () -> Unit,
+    deleteEnabled: Boolean,
+    onDetailClick: (Long) -> Unit
+) {
     Column(
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .padding(16.dp)
+            .clickable {
+                onDetailClick(transaction.id)
+            }
     ) {
         Text(transaction.category)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
