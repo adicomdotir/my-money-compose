@@ -29,4 +29,13 @@ class TransactionRepository @Inject constructor(
         delay(2000L)
         transactionDao.deleteTransaction(transaction.toEntity())
     }
+
+    suspend fun getTransactionById(id: Long): Transaction {
+        val res = transactionDao.getTransactionById(id)
+        if (res == null) {
+            throw IllegalStateException("Transaction not found")
+        } else {
+            return res.toDomain()
+        }
+    }
 }

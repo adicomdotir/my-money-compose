@@ -17,4 +17,7 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions")
     fun getAllTransactions(): Flow<List<TransactionEntity>>
+
+    @Query("SELECT * FROM transactions WHERE id = :id")
+    suspend fun getTransactionById(id: Long): TransactionEntity?
 }

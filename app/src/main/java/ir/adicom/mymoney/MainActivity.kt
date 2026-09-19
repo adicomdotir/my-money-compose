@@ -1,6 +1,5 @@
 package ir.adicom.mymoney
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,8 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import ir.adicom.mymoney.data.database.AppDatabase
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
 
 @AndroidEntryPoint
@@ -36,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
-                    AppNavHost(applicationContext = applicationContext)
+                    AppNavHost()
                 }
             }
         }
@@ -52,8 +48,7 @@ sealed class AppScreen(val route: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
-    navController: NavHostController = rememberNavController(),
-    applicationContext: Context
+    navController: NavHostController = rememberNavController()
 ) {
     NavHost(
         navController = navController,
