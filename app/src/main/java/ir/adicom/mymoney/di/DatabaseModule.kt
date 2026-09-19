@@ -9,20 +9,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ir.adicom.mymoney.data.dao.CategoryDao
 import ir.adicom.mymoney.data.dao.ExpenseDao
+import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.database.AppDatabase
 import javax.inject.Singleton
 
-/**
- * Hilt Module برای Database
- * @Singleton - یک نمونه برای کل اپلیکیشن
- */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    /**
-     * ایجاد Database Instance
-     */
     @Singleton
     @Provides
     fun provideDatabase(
@@ -35,18 +29,18 @@ object DatabaseModule {
         ).build()
     }
 
-    /**
-     * ایجاد CategoryDao
-     */
+    @Singleton
+    @Provides
+    fun provideTransactionDao(database: AppDatabase): TransactionDao {
+        return database.transactionDao()
+    }
+
     @Singleton
     @Provides
     fun provideCategoryDao(database: AppDatabase): CategoryDao {
         return database.categoryDao()
     }
 
-    /**
-     * ایجاد ExpenseDao
-     */
     @Singleton
     @Provides
     fun provideExpenseDao(database: AppDatabase): ExpenseDao {

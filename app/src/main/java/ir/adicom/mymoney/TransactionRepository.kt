@@ -5,9 +5,10 @@ import ir.adicom.mymoney.data.entity.TransactionEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 
-class TransactionRepository(
+class TransactionRepository @Inject constructor(
     private val transactionDao: TransactionDao
 ) {
     fun getTransactions(): Flow<List<Transaction>> {

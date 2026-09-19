@@ -1,6 +1,5 @@
 package ir.adicom.mymoney
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,7 +24,6 @@ import ir.adicom.mymoney.ui.theme.MyMoneyTheme
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("ViewModelConstructorInComposable")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
-                    AppNavHost(applicationContext=applicationContext)
+                    AppNavHost(applicationContext = applicationContext)
                 }
             }
         }
@@ -47,7 +46,6 @@ sealed class AppScreen(val route: String) {
     data object AddTransaction : AppScreen("add_transaction")
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
@@ -59,18 +57,16 @@ fun AppNavHost(
         startDestination = AppScreen.Home.route
     ) {
         composable(AppScreen.Home.route) {
-            val database = AppDatabase.getInstance(applicationContext)
-            val repository = TransactionRepository(database.transactionDao())
-
-            val viewModel: TransactionViewModel = viewModel(
-                factory = TransactionViewModelFactory(repository)
+            TransactionScreen(
+                onOpenAdd = {
+                    navController.navigate(AppScreen.AddTransaction.route)
+                }
             )
-            TransactionScreen(viewModel = viewModel, onOpenAdd = {
-                navController.navigate(AppScreen.AddTransaction.route)
-            })
         }
         composable(AppScreen.AddTransaction.route) {
             AddTransactionScreen()
         }
     }
+
+
 }

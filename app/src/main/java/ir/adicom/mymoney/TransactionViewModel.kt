@@ -3,6 +3,7 @@ package ir.adicom.mymoney
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface OperationState {
     data object Idle : OperationState
@@ -24,20 +26,8 @@ sealed interface TransactionEffect {
     data object TransactionAdded : TransactionEffect
 }
 
-class TransactionViewModelFactory(
-    private val repository: TransactionRepository
-) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(TransactionViewModel::class.java)) {
-            return TransactionViewModel(repository) as T
-        }
-
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
-class TransactionViewModel(
+@HiltViewModel
+class TransactionViewModel @Inject constructor(
     private val repository: TransactionRepository
 ) : ViewModel() {
 

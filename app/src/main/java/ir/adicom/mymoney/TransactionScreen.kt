@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 data class TransactionFormError(
@@ -48,7 +49,7 @@ data class TransactionFormError(
 @Composable
 fun TransactionScreen(
     modifier: Modifier = Modifier,
-    viewModel: TransactionViewModel,
+    viewModel: TransactionViewModel = hiltViewModel(),
     onOpenAdd: () -> Unit
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
