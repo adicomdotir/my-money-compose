@@ -1,6 +1,7 @@
 package ir.adicom.mymoney
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,19 @@ sealed interface OperationState {
 
 sealed interface TransactionEffect {
     data object TransactionAdded : TransactionEffect
+}
+
+class TransactionViewModelFactory(
+    private val repository: TransactionRepository
+) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(TransactionViewModel::class.java)) {
+            return TransactionViewModel(repository) as T
+        }
+
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }
 
 class TransactionViewModel(

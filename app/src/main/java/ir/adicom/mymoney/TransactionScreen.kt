@@ -46,7 +46,11 @@ data class TransactionFormError(
 
 @ExperimentalMaterial3Api
 @Composable
-fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewModel) {
+fun TransactionScreen(
+    modifier: Modifier = Modifier,
+    viewModel: TransactionViewModel,
+    onOpenAdd: () -> Unit
+) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
 
@@ -229,6 +233,12 @@ fun TransactionScreen(modifier: Modifier = Modifier, viewModel: TransactionViewM
             enabled = operationState !is OperationState.Adding
         ) {
             Text("Add")
+        }
+
+        ElevatedButton(onClick = {
+            onOpenAdd()
+        }) {
+            Text("Go to add transaction screen")
         }
 
         Spacer(modifier = Modifier.height(64.dp))
