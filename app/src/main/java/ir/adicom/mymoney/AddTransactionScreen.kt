@@ -69,6 +69,7 @@ fun AddTransactionScreen(
             OperationState.Idle -> Unit
             OperationState.Adding -> CircularProgressIndicator()
             OperationState.Deleting -> CircularProgressIndicator()
+            OperationState.Updating -> CircularProgressIndicator()
             is OperationState.Error -> Text(operation.message)
         }
 

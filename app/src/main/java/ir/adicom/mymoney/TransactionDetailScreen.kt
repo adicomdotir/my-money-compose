@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,7 +14,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun TransactionDetailScreen(
-    viewModel: TransactionDetailViewModel = hiltViewModel()
+    viewModel: TransactionDetailViewModel = hiltViewModel(),
+    onEdit: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -31,6 +33,13 @@ fun TransactionDetailScreen(
                 Text("title = ${state.transaction!!.title}")
                 Text("category = ${state.transaction!!.category}")
                 Text("amount = ${state.transaction!!.amount}")
+                ElevatedButton(
+                    onClick = {
+                        onEdit(state.transaction!!.id)
+                    }
+                ) {
+                    Text("Edit")
+                }
             }
         }
     }

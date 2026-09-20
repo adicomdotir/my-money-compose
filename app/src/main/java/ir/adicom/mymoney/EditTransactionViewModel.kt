@@ -9,18 +9,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class TransactionDetailUiState(
+data class EditTransactionUiState(
     val transaction: Transaction? = null, val isLoading: Boolean = true, val error: String? = null
 )
 
 @HiltViewModel
-class TransactionDetailViewModel @Inject constructor(
+class EditTransactionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle, private val repository: TransactionRepository
 ) : ViewModel() {
     private val id: Long = checkNotNull(savedStateHandle["id"])
 
     private val _state =
-        MutableStateFlow(TransactionDetailUiState(isLoading = true))
+        MutableStateFlow(EditTransactionUiState(isLoading = true))
     val state = _state.asStateFlow()
 
     init {
@@ -41,6 +41,20 @@ class TransactionDetailViewModel @Inject constructor(
                     isLoading = false,
                     error = e.message ?: "Unknown error"
                 )
+            }
+        }
+    }
+
+     fun updateTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+//            _operationState.value = OperationState.Updating
+
+            try {
+                repository.updateTransaction(transaction)
+//                _operationState.value = OperationState.Idle
+            } catch (e: Exception) {
+//                _operationState.value =
+//                    OperationState.Error(e.message ?: "Unknown error")
             }
         }
     }

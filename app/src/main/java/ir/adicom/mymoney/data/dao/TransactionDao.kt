@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import ir.adicom.mymoney.data.entity.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -20,4 +21,7 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionById(id: Long): TransactionEntity?
+
+    @Update
+    suspend fun updateTransaction(transaction: TransactionEntity)
 }

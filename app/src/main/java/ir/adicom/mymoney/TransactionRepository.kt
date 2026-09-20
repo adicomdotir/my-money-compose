@@ -38,4 +38,9 @@ class TransactionRepository @Inject constructor(
             return res.toDomain()
         }
     }
+
+    suspend fun updateTransaction(transaction: Transaction) {
+        delay(2000L)
+        transactionDao.updateTransaction(transaction = transaction.toEntity())
+    }
 }

@@ -43,6 +43,7 @@ sealed class AppScreen(val route: String) {
     data object Home : AppScreen("home")
     data object AddTransaction : AppScreen("add_transaction")
     data object Detail : AppScreen("detail/{id}")
+    data object EditTransaction : AppScreen("edit_transaction/{id}")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,11 +65,28 @@ fun AppNavHost(
                 }
             )
         }
+
         composable(AppScreen.AddTransaction.route) {
             AddTransactionScreen(onBack = {
                 navController.popBackStack()
             })
         }
+
+        composable(
+            AppScreen.EditTransaction.route,
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.LongType
+                }
+            )
+        ) {
+            EditTransactionScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable(
             AppScreen.Detail.route,
             arguments = listOf(
@@ -76,7 +94,11 @@ fun AppNavHost(
                     type = NavType.LongType
                 }
             )) { backStackEntry ->
-            TransactionDetailScreen()
+            TransactionDetailScreen(
+                onEdit = { id ->
+                    navController.navigate("edit_transaction/$id")
+                }
+            )
         }
     }
 

@@ -1,5 +1,7 @@
 package ir.adicom.mymoney
 
+import androidx.compose.animation.core.updateTransition
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,6 +21,7 @@ sealed interface OperationState {
     data object Idle : OperationState
     data object Adding : OperationState
     data object Deleting : OperationState
+    data object Updating : OperationState
     data class Error(val message: String) : OperationState
 }
 
@@ -61,6 +64,7 @@ class TransactionViewModel @Inject constructor(
 
     private val _effect = MutableSharedFlow<TransactionEffect>()
     val effect = _effect.asSharedFlow()
+
 
     fun onEvent(event: TransactionEvent) {
         when (event) {
