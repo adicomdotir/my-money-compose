@@ -32,6 +32,7 @@ fun EditTransactionScreen(
     onBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val operationState by viewModel.operationState.collectAsStateWithLifecycle()
 
     var titleTxtField by remember { mutableStateOf("") }
     var categoryTxtField by remember { mutableStateOf("") }
@@ -48,13 +49,13 @@ fun EditTransactionScreen(
     var selectedType by remember { mutableStateOf(TransactionType.EXPENSE) }
 
     LaunchedEffect(Unit) {
-//        viewModel.effect.collect { message ->
-//            when (message) {
-//                TransactionEffect.TransactionAdded -> {
-//                    onBack()
-//                }
-//            }
-//        }
+        viewModel.effect.collect { message ->
+            when (message) {
+                TransactionEffect.TransactionAdded -> {
+                    onBack()
+                }
+            }
+        }
     }
 
     LaunchedEffect(state.transaction) {
@@ -180,7 +181,7 @@ fun EditTransactionScreen(
                         )
                     )
                 },
-//                enabled = operationState !is OperationState.Adding
+                enabled = !operationState
             ) {
                 Text("Add")
             }

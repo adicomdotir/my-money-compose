@@ -4,7 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +24,12 @@ class EditTransactionViewModel @Inject constructor(
     private val _state =
         MutableStateFlow(EditTransactionUiState(isLoading = true))
     val state = _state.asStateFlow()
+
+    private val _effect = MutableSharedFlow<TransactionEffect>()
+    val effect = _effect.asSharedFlow()
+
+    private val _operationState = MutableStateFlow(false)
+    val operationState = _operationState.asStateFlow()
 
     init {
         getTransactionById()
@@ -47,14 +55,14 @@ class EditTransactionViewModel @Inject constructor(
 
      fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch {
-//            _operationState.value = OperationState.Updating
+            _operationState.value = true
 
             try {
                 repository.updateTransaction(transaction)
-//                _operationState.value = OperationState.Idle
+                _operationState.value = false
+                _effect.emit(TransactionEffect.TransactionAdded)
             } catch (e: Exception) {
-//                _operationState.value =
-//                    OperationState.Error(e.message ?: "Unknown error")
+                _operationState.value = false
             }
         }
     }
