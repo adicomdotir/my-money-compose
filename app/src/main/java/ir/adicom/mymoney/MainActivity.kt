@@ -74,8 +74,7 @@ fun AppNavHost(
                     type = NavType.LongType
                 }
             )) { backStackEntry ->
-            val id = backStackEntry.arguments?.getLong("id") ?: return@composable
-            TransactionDetailScreen(id = id)
+            TransactionDetailScreen()
         }
     }
 
