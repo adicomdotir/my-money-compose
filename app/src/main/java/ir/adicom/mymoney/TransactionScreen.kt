@@ -40,11 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-data class TransactionFormError(
-    val title: String? = null,
-    val category: String? = null,
-    val amount: String? = null
-)
 
 @ExperimentalMaterial3Api
 @Composable
@@ -56,33 +51,6 @@ fun TransactionScreen(
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
-
-    var titleTxtField by remember { mutableStateOf("") }
-    var categoryTxtField by remember { mutableStateOf("") }
-    var amountTxtField by remember { mutableStateOf("") }
-
-    var formError by remember {
-        mutableStateOf(TransactionFormError())
-    }
-
-    var hasSubmitted by remember { mutableStateOf(false) }
-
-    val transactionTypes = TransactionType.entries
-    var expanded by remember { mutableStateOf(false) }
-    var selectedType by remember { mutableStateOf(TransactionType.EXPENSE) }
-
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect { message ->
-            when (message) {
-                TransactionEffect.TransactionAdded -> {
-                    titleTxtField = ""
-                    categoryTxtField = ""
-                    amountTxtField = ""
-                    selectedType = TransactionType.EXPENSE
-                }
-            }
-        }
-    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -131,115 +99,7 @@ fun TransactionScreen(
             is OperationState.Error -> Text(operation.message)
         }
 
-        Text("Add Transaction")
-        AppTextField(
-            label = "Title",
-            value = titleTxtField,
-            onValueChange = {
-                titleTxtField = it
 
-                if (it.isNotBlank()) {
-                    formError = formError.copy(title = null)
-                }
-            },
-            error = if (hasSubmitted) formError.title ?: "" else ""
-        )
-        AppTextField(
-            label = "Category",
-            value = categoryTxtField,
-            onValueChange = {
-                categoryTxtField = it
-
-                if (it.isNotBlank()) {
-                    formError = formError.copy(category = null)
-                }
-            },
-            error = if (hasSubmitted) formError.category ?: "" else ""
-        )
-        AppTextField(
-            label = "Amount",
-            value = amountTxtField,
-            onValueChange = {
-                amountTxtField = it
-
-                formError = formError.copy(
-                    amount = when {
-                        amountTxtField.isBlank() -> "Fill amount"
-                        amountTxtField.toDoubleOrNull() == null -> "Invalid amount"
-                        amountTxtField.toDouble() <= 0 -> "Amount must be greater than 0"
-                        else -> null
-                    }
-                )
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal
-            ),
-            error = if (hasSubmitted) formError.amount ?: "" else ""
-        )
-
-
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = {
-                    expanded = !expanded
-                }
-            ) {
-                TextField(
-                    value = selectedType.name,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    transactionTypes.forEach { item ->
-                        DropdownMenuItem(
-                            text = { Text(text = item.name) },
-                            onClick = {
-                                selectedType = item
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-        ElevatedButton(
-            onClick = {
-                formError = validateForm(
-                    title = titleTxtField,
-                    category = categoryTxtField,
-                    amount = amountTxtField
-                )
-
-                hasSubmitted = true
-
-                if (formError.hasError()) {
-                    return@ElevatedButton
-                }
-
-                viewModel.onEvent(
-                    TransactionEvent.AddTransaction(
-                        title = titleTxtField,
-                        category = categoryTxtField,
-                        amount = amountTxtField.toDoubleOrNull() ?: 0.0,
-                        type = selectedType,
-                    )
-                )
-            },
-            enabled = operationState !is OperationState.Adding
-        ) {
-            Text("Add")
-        }
 
         ElevatedButton(onClick = {
             onOpenAdd()
@@ -278,51 +138,6 @@ fun TransactionItem(
         }
     }
 }
-
-@Composable
-fun AppTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(),
-    error: String
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = keyboardOptions,
-        isError = error.isNotEmpty(),
-        supportingText = {
-            if (error.isNotEmpty()) {
-                Text(error)
-            }
-        }
-    )
-}
-
-fun validateForm(
-    title: String,
-    category: String,
-    amount: String
-): TransactionFormError {
-    val parsedAmount = amount.toDoubleOrNull()
-
-    return TransactionFormError(
-        title = if (title.isBlank()) "Fill title" else null,
-        category = if (category.isBlank()) "Fill category" else null,
-        amount = when {
-            amount.isBlank() -> "Fill amount"
-            parsedAmount == null -> "Invalid amount"
-            parsedAmount <= 0 -> "Amount must be greater than 0"
-            else -> null
-        }
-    )
-}
-
-fun TransactionFormError.hasError(): Boolean =
-    title != null || category != null || amount != null
 
 fun addSignToAmount(transaction: Transaction): String {
     if (transaction.type == TransactionType.INCOME) {

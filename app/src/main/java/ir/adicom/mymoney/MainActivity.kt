@@ -65,7 +65,9 @@ fun AppNavHost(
             )
         }
         composable(AppScreen.AddTransaction.route) {
-            AddTransactionScreen()
+            AddTransactionScreen(onBack = {
+                navController.popBackStack()
+            })
         }
         composable(
             AppScreen.Detail.route,
