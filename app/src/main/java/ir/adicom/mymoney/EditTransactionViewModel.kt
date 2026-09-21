@@ -28,7 +28,7 @@ class EditTransactionViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<TransactionEffect>()
     val effect = _effect.asSharedFlow()
 
-    private val _operationState = MutableStateFlow(false)
+    private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
     val operationState = _operationState.asStateFlow()
 
     init {
@@ -53,16 +53,19 @@ class EditTransactionViewModel @Inject constructor(
         }
     }
 
-     fun updateTransaction(transaction: Transaction) {
+    fun updateTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            _operationState.value = true
+            _operationState.value = OperationState.Updating
 
             try {
                 repository.updateTransaction(transaction)
-                _operationState.value = false
-                _effect.emit(TransactionEffect.TransactionAdded)
+                _operationState.value = OperationState.Idle
+                _effect.emit(TransactionEffect.TransactionUpdated)
             } catch (e: Exception) {
-                _operationState.value = false
+                _operationState.value = OperationState.Error(
+                    e.message ?: "Unknown error"
+                )
+                // handle it
             }
         }
     }

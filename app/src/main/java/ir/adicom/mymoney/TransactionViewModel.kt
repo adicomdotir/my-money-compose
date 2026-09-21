@@ -1,9 +1,6 @@
 package ir.adicom.mymoney
 
-import androidx.compose.animation.core.updateTransition
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,18 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed interface OperationState {
-    data object Idle : OperationState
-    data object Adding : OperationState
-    data object Deleting : OperationState
-    data object Updating : OperationState
-    data class Error(val message: String) : OperationState
-}
-
-sealed interface TransactionEffect {
-    data object TransactionAdded : TransactionEffect
-}
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(

@@ -10,3 +10,8 @@ sealed interface TransactionEvent {
 
     data class DeleteTransaction(val transaction: Transaction) : TransactionEvent
 }
+
+sealed class Test {
+    data class TestA(val a: Int): Test()
+    data object IsLoading: Test()
+}

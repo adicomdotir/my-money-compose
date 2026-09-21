@@ -59,6 +59,7 @@ fun AddTransactionScreen(
                 TransactionEffect.TransactionAdded -> {
                     onBack()
                 }
+                else -> Unit
             }
         }
     }
