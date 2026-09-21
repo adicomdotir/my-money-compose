@@ -42,8 +42,13 @@ class MainActivity : ComponentActivity() {
 sealed class AppScreen(val route: String) {
     data object Home : AppScreen("home")
     data object AddTransaction : AppScreen("add_transaction")
-    data object Detail : AppScreen("detail/{id}")
-    data object EditTransaction : AppScreen("edit_transaction/{id}")
+    data object Detail : AppScreen("detail/{id}") {
+        fun createRoute(id: Long) = "detail/$id"
+    }
+
+    data object EditTransaction : AppScreen("edit_transaction/{id}") {
+        fun createRoute(id: Long) = "edit_transaction/$id"
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +66,7 @@ fun AppNavHost(
                     navController.navigate(AppScreen.AddTransaction.route)
                 },
                 onDetailClick = { id ->
-                    navController.navigate("detail/$id")
+                    navController.navigate(AppScreen.Detail.createRoute(id))
                 }
             )
         }
@@ -96,7 +101,7 @@ fun AppNavHost(
             )) { backStackEntry ->
             TransactionDetailScreen(
                 onEdit = { id ->
-                    navController.navigate("edit_transaction/$id")
+                    navController.navigate(AppScreen.EditTransaction.createRoute(id))
                 }
             )
         }

@@ -65,7 +65,6 @@ class EditTransactionViewModel @Inject constructor(
                 _operationState.value = OperationState.Error(
                     e.message ?: "Unknown error"
                 )
-                // handle it
             }
         }
     }
