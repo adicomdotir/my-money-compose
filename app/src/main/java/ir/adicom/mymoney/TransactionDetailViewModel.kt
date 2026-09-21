@@ -23,11 +23,7 @@ class TransactionDetailViewModel @Inject constructor(
         MutableStateFlow(TransactionDetailUiState(isLoading = true))
     val state = _state.asStateFlow()
 
-    init {
-        getTransactionById()
-    }
-
-    private fun getTransactionById() {
+    fun getTransactionById() {
         viewModelScope.launch {
             try {
                 val res = repository.getTransactionById(id)
