@@ -75,19 +75,7 @@ fun AddTransactionScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Add Transaction")
-                },
-                navigationIcon = { // <-- اضافه کردن آیکن برگشت در اینجا
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
+            CustomAppBar("Add Transaction", onBackClick = onBack)
         }
     ) {
         Column(

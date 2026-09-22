@@ -3,10 +3,14 @@ package ir.adicom.mymoney
 import android.R.attr.navigationIcon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,19 +42,7 @@ fun TransactionDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Transaction Detail")
-                },
-                navigationIcon = { // <-- اضافه کردن آیکن برگشت در اینجا
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
+            CustomAppBar("Transaction Detail", onBackClick = onBackClick)
         }
     ) {
         Column(
@@ -66,17 +58,28 @@ fun TransactionDetailScreen(
                 state.error != null -> Text(state.error ?: "")
 
                 state.transaction != null -> {
-                    Text("ID = ${state.transaction!!.id}")
-                    Text("title = ${state.transaction!!.title}")
-                    Text("category = ${state.transaction!!.category}")
-                    Text("amount = ${state.transaction!!.amount}")
-                    ElevatedButton(
-                        onClick = {
-                            onEdit(state.transaction!!.id)
-                        }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
-                        Text("Edit")
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text("ID = ${state.transaction!!.id}")
+                            Text("title = ${state.transaction!!.title}")
+                            Text("category = ${state.transaction!!.category}")
+                            Text("amount = ${state.transaction!!.amount}")
+                            Spacer(Modifier.height(16.dp))
+                            ElevatedButton(
+                                onClick = {
+                                    onEdit(state.transaction!!.id)
+                                }
+                            ) {
+                                Text("Edit")
+                            }
+                        }
                     }
+
                 }
             }
         }

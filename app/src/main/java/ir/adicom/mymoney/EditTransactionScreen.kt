@@ -86,19 +86,7 @@ fun EditTransactionScreen(
     } else {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text("Edit Transaction")
-                    },
-                    navigationIcon = { // <-- اضافه کردن آیکن برگشت در اینجا
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                CustomAppBar("Edit Transaction", onBackClick = onBack)
             }
         ) {
             Column(
