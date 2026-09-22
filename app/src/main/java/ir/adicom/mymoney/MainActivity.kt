@@ -102,6 +102,9 @@ fun AppNavHost(
             TransactionDetailScreen(
                 onEdit = { id ->
                     navController.navigate(AppScreen.EditTransaction.createRoute(id))
+                },
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
