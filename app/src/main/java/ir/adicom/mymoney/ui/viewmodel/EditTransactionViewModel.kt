@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ir.adicom.mymoney.OperationState
-import ir.adicom.mymoney.Transaction
-import ir.adicom.mymoney.TransactionEffect
-import ir.adicom.mymoney.TransactionRepository
+import ir.adicom.mymoney.ui.OperationState
+import ir.adicom.mymoney.domain.model.Transaction
+import ir.adicom.mymoney.ui.TransactionEffect
+import ir.adicom.mymoney.data.repository.TransactionRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow

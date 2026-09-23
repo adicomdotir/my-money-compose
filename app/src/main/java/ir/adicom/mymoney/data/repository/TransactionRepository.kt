@@ -1,12 +1,14 @@
-package ir.adicom.mymoney
+package ir.adicom.mymoney.data.repository
 
+import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.entity.TransactionEntity
+import ir.adicom.mymoney.domain.model.toDomain
+import ir.adicom.mymoney.domain.model.toEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
 
 class TransactionRepository @Inject constructor(
     private val transactionDao: TransactionDao

@@ -1,5 +1,6 @@
-package ir.adicom.mymoney
+package ir.adicom.mymoney.domain.model
 
+import ir.adicom.mymoney.ui.TransactionType
 import ir.adicom.mymoney.data.entity.TransactionEntity
 
 data class Transaction(

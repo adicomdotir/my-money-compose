@@ -1,4 +1,6 @@
-package ir.adicom.mymoney
+package ir.adicom.mymoney.ui
+
+import ir.adicom.mymoney.domain.model.Transaction
 
 data class TransactionUiState(
     val transactions: List<Transaction>,

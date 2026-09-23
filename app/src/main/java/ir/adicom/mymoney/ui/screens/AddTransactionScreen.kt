@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.ui.components.CustomAppBar
-import ir.adicom.mymoney.OperationState
-import ir.adicom.mymoney.TransactionEffect
-import ir.adicom.mymoney.TransactionEvent
-import ir.adicom.mymoney.TransactionType
+import ir.adicom.mymoney.ui.OperationState
+import ir.adicom.mymoney.ui.TransactionEffect
+import ir.adicom.mymoney.ui.TransactionEvent
+import ir.adicom.mymoney.ui.TransactionType
 import ir.adicom.mymoney.ui.viewmodel.TransactionViewModel
 
 data class TransactionFormError(

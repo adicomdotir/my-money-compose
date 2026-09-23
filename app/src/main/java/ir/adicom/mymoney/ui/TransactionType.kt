@@ -1,4 +1,4 @@
-package ir.adicom.mymoney
+package ir.adicom.mymoney.ui
 
 enum class TransactionType {
     INCOME,

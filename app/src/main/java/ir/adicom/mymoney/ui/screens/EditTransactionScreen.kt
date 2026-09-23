@@ -28,10 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.ui.components.CustomAppBar
-import ir.adicom.mymoney.OperationState
-import ir.adicom.mymoney.Transaction
-import ir.adicom.mymoney.TransactionEffect
-import ir.adicom.mymoney.TransactionType
+import ir.adicom.mymoney.ui.OperationState
+import ir.adicom.mymoney.domain.model.Transaction
+import ir.adicom.mymoney.ui.TransactionEffect
+import ir.adicom.mymoney.ui.TransactionType
 import ir.adicom.mymoney.ui.viewmodel.EditTransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
