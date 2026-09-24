@@ -137,7 +137,7 @@ fun TransactionItem(
         Text(transaction.category)
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(transaction.title)
-            Text(addSignToAmount(transaction), color = getColor(transaction))
+            Text(transaction.formattedAmount, color = transaction.amountColor)
             IconButton(
                 onClick = onClick,
                 enabled = deleteEnabled
@@ -152,16 +152,14 @@ fun TransactionItem(
     }
 }
 
-private fun getColor(transaction: Transaction): Color {
-    if (transaction.type == TransactionType.INCOME) {
-        return Color.Green
+private val Transaction.amountColor: Color
+    get() = when (type) {
+        TransactionType.INCOME -> Color.Green
+        TransactionType.EXPENSE -> Color.Red
     }
-    return Color.Red
-}
 
-fun addSignToAmount(transaction: Transaction): String {
-    if (transaction.type == TransactionType.INCOME) {
-        return "+ $${transaction.amount}"
+private val Transaction.formattedAmount: String
+    get() = when (type) {
+        TransactionType.INCOME -> "+ $${amount}"
+        TransactionType.EXPENSE -> "- $${amount}"
     }
-    return "- $${transaction.amount}"
-}
