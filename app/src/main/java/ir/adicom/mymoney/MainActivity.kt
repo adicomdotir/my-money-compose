@@ -17,10 +17,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
-import ir.adicom.mymoney.ui.screens.AddTransactionScreen
-import ir.adicom.mymoney.ui.screens.EditTransactionScreen
-import ir.adicom.mymoney.ui.screens.TransactionDetailScreen
-import ir.adicom.mymoney.ui.screens.TransactionScreen
+import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
+import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
+import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
+import ir.adicom.mymoney.ui.transaction.TransactionScreen
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
 
 @AndroidEntryPoint

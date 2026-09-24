@@ -1,6 +1,7 @@
-package ir.adicom.mymoney.ui
+package ir.adicom.mymoney.ui.transaction
 
 import ir.adicom.mymoney.domain.model.Transaction
+import ir.adicom.mymoney.domain.model.TransactionType
 
 sealed interface TransactionEvent {
     data class AddTransaction(
@@ -11,9 +12,4 @@ sealed interface TransactionEvent {
     ) : TransactionEvent
 
     data class DeleteTransaction(val transaction: Transaction) : TransactionEvent
-}
-
-sealed class Test {
-    data class TestA(val a: Int): Test()
-    data object IsLoading: Test()
 }

@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui.screens
+package ir.adicom.mymoney.ui.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.ui.components.CustomAppBar
-import ir.adicom.mymoney.ui.viewmodel.TransactionDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

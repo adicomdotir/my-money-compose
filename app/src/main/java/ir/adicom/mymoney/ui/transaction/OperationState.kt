@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui
+package ir.adicom.mymoney.ui.transaction
 
 sealed interface OperationState {
     data object Idle : OperationState

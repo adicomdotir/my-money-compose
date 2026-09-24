@@ -1,15 +1,11 @@
-package ir.adicom.mymoney.ui.viewmodel
+package ir.adicom.mymoney.ui.transaction
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ir.adicom.mymoney.ui.OperationState
 import ir.adicom.mymoney.domain.model.Transaction
-import ir.adicom.mymoney.ui.TransactionEffect
-import ir.adicom.mymoney.ui.TransactionEvent
 import ir.adicom.mymoney.data.repository.TransactionRepository
-import ir.adicom.mymoney.ui.TransactionType
-import ir.adicom.mymoney.ui.TransactionUiState
+import ir.adicom.mymoney.domain.model.TransactionType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

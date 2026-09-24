@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui.viewmodel
+package ir.adicom.mymoney.ui.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui.screens
+package ir.adicom.mymoney.ui.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.ui.unit.dp
+import ir.adicom.mymoney.ui.category.CategoryScreen
 
 /**
  * HomeScreen - صفحه خانه

@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui.screens
+package ir.adicom.mymoney.ui.category
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ir.adicom.mymoney.data.entity.Category
 import ir.adicom.mymoney.ui.components.CategoryFormDialog
-import ir.adicom.mymoney.ui.viewmodel.CategoryViewModel
+import ir.adicom.mymoney.ui.category.CategoryViewModel
 
 
 /**

@@ -1,4 +1,4 @@
-package ir.adicom.mymoney.ui.screens
+package ir.adicom.mymoney.ui.transaction
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,12 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ir.adicom.mymoney.ui.OperationState
 import ir.adicom.mymoney.domain.model.Transaction
-import ir.adicom.mymoney.ui.TransactionEvent
-import ir.adicom.mymoney.ui.TransactionType
-import ir.adicom.mymoney.ui.viewmodel.TransactionViewModel
-import ir.adicom.mymoney.ui.viewmodel.calculateBalance
+import ir.adicom.mymoney.domain.model.TransactionType
 
 
 @ExperimentalMaterial3Api
