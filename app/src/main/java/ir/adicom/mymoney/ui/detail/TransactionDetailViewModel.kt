@@ -4,16 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.data.repository.TransactionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class TransactionDetailUiState(
-    val transaction: Transaction? = null, val isLoading: Boolean = true, val error: String? = null
-)
 
 @HiltViewModel
 class TransactionDetailViewModel @Inject constructor(
@@ -27,18 +23,23 @@ class TransactionDetailViewModel @Inject constructor(
 
     fun getTransactionById() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 val res = repository.getTransactionById(id)
 
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    transaction = res
-                )
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        transaction = res
+                    )
+                }
             } catch (e: Exception) {
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    error = e.message ?: "Unknown error"
-                )
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error"
+                    )
+                }
             }
         }
     }
