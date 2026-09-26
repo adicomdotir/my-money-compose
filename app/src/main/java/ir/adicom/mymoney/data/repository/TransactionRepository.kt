@@ -3,8 +3,8 @@ package ir.adicom.mymoney.data.repository
 import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.entity.TransactionEntity
-import ir.adicom.mymoney.domain.model.toDomain
-import ir.adicom.mymoney.domain.model.toEntity
+import ir.adicom.mymoney.data.mapper.toDomain
+import ir.adicom.mymoney.data.mapper.toEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
