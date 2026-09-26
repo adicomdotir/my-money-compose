@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
 import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
+import ir.adicom.mymoney.ui.navigation.AppNavHost
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
 
@@ -43,76 +44,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-sealed class AppScreen(val route: String) {
-    data object Home : AppScreen("home")
-    data object AddTransaction : AppScreen("add_transaction")
-    data object Detail : AppScreen("detail/{id}") {
-        fun createRoute(id: Long) = "detail/$id"
-    }
-
-    data object EditTransaction : AppScreen("edit_transaction/{id}") {
-        fun createRoute(id: Long) = "edit_transaction/$id"
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppNavHost(
-    navController: NavHostController = rememberNavController()
-) {
-    NavHost(
-        navController = navController,
-        startDestination = AppScreen.Home.route
-    ) {
-        composable(AppScreen.Home.route) {
-            TransactionScreen(
-                onOpenAdd = {
-                    navController.navigate(AppScreen.AddTransaction.route)
-                },
-                onDetailClick = { id ->
-                    navController.navigate(AppScreen.Detail.createRoute(id))
-                }
-            )
-        }
-
-        composable(AppScreen.AddTransaction.route) {
-            AddTransactionScreen(onBack = {
-                navController.popBackStack()
-            })
-        }
-
-        composable(
-            AppScreen.EditTransaction.route,
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.LongType
-                }
-            )
-        ) {
-            EditTransactionScreen(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable(
-            AppScreen.Detail.route,
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.LongType
-                }
-            )) { backStackEntry ->
-            TransactionDetailScreen(
-                onEdit = { id ->
-                    navController.navigate(AppScreen.EditTransaction.createRoute(id))
-                },
-                onBackClick = {
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-
-
-}
