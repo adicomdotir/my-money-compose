@@ -118,4 +118,53 @@ class CoroutineTest {
 
         println("Done")
     }
+
+    @Test
+    fun testCancellation06() = runBlocking {
+        val job = launch {
+            repeat(5) { i ->
+                println("Before $i")
+
+                if (isActive) {
+                    println("Working $i")
+                }
+
+                delay(1000)
+            }
+        }
+
+        delay(1900)
+        job.cancelAndJoin()
+
+        println("Done")
+    }
+
+    @Test
+    fun testCancellation07() = runBlocking {
+        try {
+            val job = launch {
+                delay(1000)
+                throw RuntimeException("Boom")
+            }
+
+            job.join()
+
+            println("After")
+        } catch (e: Exception) {
+            println("Error: " + e.message)
+        }
+    }
+
+    @Test
+    fun testCancellation08() = runBlocking {
+        val job = launch {
+            delay(5000)
+            println("Done")
+        }
+
+        job.cancel()
+        job.join()
+
+        println("Finished")
+    }
 }
