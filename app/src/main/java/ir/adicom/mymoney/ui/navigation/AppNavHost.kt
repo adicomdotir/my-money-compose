@@ -13,7 +13,6 @@ import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(

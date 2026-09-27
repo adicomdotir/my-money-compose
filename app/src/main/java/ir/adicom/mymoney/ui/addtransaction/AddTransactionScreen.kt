@@ -68,7 +68,6 @@ fun AddTransactionScreen(
                 TransactionEffect.TransactionAdded -> {
                     onBack()
                 }
-
                 else -> Unit
             }
         }
@@ -78,10 +77,10 @@ fun AddTransactionScreen(
         topBar = {
             CustomAppBar("Add Transaction", onBackClick = onBack)
         }
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
                 .padding(16.dp)
         ) {
             when (val operation = operationState) {

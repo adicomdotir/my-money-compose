@@ -7,22 +7,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
-import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
-import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.navigation.AppNavHost
-import ir.adicom.mymoney.ui.transaction.TransactionScreen
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -31,16 +24,40 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        setContent {
-            MyMoneyTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White
-                ) {
-                    AppNavHost()
+
+        lifecycleScope.launch {
+
+            val job = launch {
+                try {
+                    delay(5000)
+                    println("Done")
+                } finally {
+                    println("Finally")
                 }
             }
+
+            job.cancel()
+
+            try {
+                job.join()
+                println("Joined")
+            } catch (e: CancellationException) {
+                println("Join cancelled")
+            }
+
+            println("After")
         }
+
+//        setContent {
+//            MyMoneyTheme {
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = Color.White
+//                ) {
+//                    AppNavHost()
+//                }
+//            }
+//        }
     }
 }
 
