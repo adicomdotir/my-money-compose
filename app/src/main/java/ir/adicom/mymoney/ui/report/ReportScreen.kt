@@ -78,8 +78,8 @@ fun ReportScreen() {
 
             items(10) {
                 CategoryReportItem(
-                    category = "Category Name",
-                    amount = "500$"
+                    category = "Category Name $it",
+                    amount = "${50 * it}$"
                 )
             }
 
