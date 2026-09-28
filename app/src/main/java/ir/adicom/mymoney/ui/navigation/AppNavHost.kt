@@ -34,9 +34,11 @@ fun AppNavHost(
         }
 
         composable(Screen.AddTransaction.route) {
-            AddTransactionScreen(onBack = {
-                navController.popBackStack()
-            })
+            AddTransactionScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(
@@ -60,7 +62,8 @@ fun AppNavHost(
                 navArgument("id") {
                     type = NavType.LongType
                 }
-            )) { backStackEntry ->
+            )
+        ) { backStackEntry ->
             TransactionDetailScreen(
                 onEdit = { id ->
                     navController.navigate(Screen.EditTransaction.createRoute(id))

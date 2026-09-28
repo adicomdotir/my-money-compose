@@ -24,40 +24,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-
-        lifecycleScope.launch {
-
-            val job = launch {
-                try {
-                    delay(5000)
-                    println("Done")
-                } finally {
-                    println("Finally")
+        setContent {
+            MyMoneyTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
+                ) {
+                    AppNavHost()
                 }
             }
-
-            job.cancel()
-
-            try {
-                job.join()
-                println("Joined")
-            } catch (e: CancellationException) {
-                println("Join cancelled")
-            }
-
-            println("After")
         }
-
-//        setContent {
-//            MyMoneyTheme {
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = Color.White
-//                ) {
-//                    AppNavHost()
-//                }
-//            }
-//        }
     }
 }
 
