@@ -11,4 +11,6 @@ sealed class Screen(val route: String) {
     data object EditTransaction : Screen("edit_transaction/{id}") {
         fun createRoute(id: Long) = "edit_transaction/$id"
     }
+
+    data object Report : Screen("report")
 }

@@ -16,10 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import ir.adicom.mymoney.ui.components.CustomAppBar
 
 @Composable
-fun ReportScreen() {
+fun ReportScreen(
+    viewModel: ReportViewModel = hiltViewModel()
+) {
     Scaffold(
         topBar = {
             CustomAppBar(

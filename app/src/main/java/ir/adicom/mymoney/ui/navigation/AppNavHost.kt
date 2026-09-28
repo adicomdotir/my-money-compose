@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
 import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
+import ir.adicom.mymoney.ui.report.ReportScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +21,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Report.route
     ) {
         composable(Screen.Home.route) {
             TransactionScreen(
@@ -72,6 +73,12 @@ fun AppNavHost(
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable(
+            Screen.Report.route
+        ) {
+            ReportScreen()
         }
     }
 
