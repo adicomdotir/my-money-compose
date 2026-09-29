@@ -12,6 +12,7 @@ import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
 import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
 import ir.adicom.mymoney.ui.report.ReportScreen
+import ir.adicom.mymoney.ui.setting.SettingScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,7 +79,21 @@ fun AppNavHost(
         composable(
             Screen.Report.route
         ) {
-            ReportScreen()
+            ReportScreen(
+                onBackClick = {
+                    navController.navigate(Screen.Setting.route)
+                }
+            )
+        }
+
+        composable(
+            Screen.Setting.route
+        ) {
+            SettingScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 

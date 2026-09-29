@@ -7,6 +7,7 @@ import ir.adicom.mymoney.data.dao.CategoryDao
 import ir.adicom.mymoney.data.dao.ExpenseDao
 import ir.adicom.mymoney.data.repository.CategoryRepository
 import ir.adicom.mymoney.data.repository.ExpenseRepository
+import ir.adicom.mymoney.data.repository.SettingRepository
 import javax.inject.Singleton
 
 /**
@@ -34,4 +35,8 @@ object RepositoryModule {
     fun provideExpenseRepository(expenseDao: ExpenseDao): ExpenseRepository {
         return ExpenseRepository(expenseDao)
     }
+
+    @Singleton
+    @Provides
+    fun provideSettingRepository(): SettingRepository = SettingRepository()
 }

@@ -21,13 +21,14 @@ import ir.adicom.mymoney.ui.components.CustomAppBar
 
 @Composable
 fun ReportScreen(
-    viewModel: ReportViewModel = hiltViewModel()
+    viewModel: ReportViewModel = hiltViewModel(),
+    onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             CustomAppBar(
                 title = "Report",
-                onBackClick = {}
+                onBackClick = onBackClick
             )
         }
     ) { paddingValues ->

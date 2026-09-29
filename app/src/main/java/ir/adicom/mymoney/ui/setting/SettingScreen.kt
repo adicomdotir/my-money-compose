@@ -13,22 +13,23 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun SettingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SettingViewModel = hiltViewModel(),
+    onBackClick: () -> Unit
 ) {
-    var selectedCurrency by rememberSaveable {
-        mutableStateOf("Rial")
-    }
+    val selectedCurrency = viewModel.currency.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -48,20 +49,26 @@ fun SettingScreen(
             Column {
                 CurrencyOption(
                     title = "Rial",
-                    selected = selectedCurrency == "Rial",
+                    selected = selectedCurrency.value == "Rial",
                     onClick = {
-                        selectedCurrency = "Rial"
+                        viewModel.saveCurrency("Rial")
                     }
                 )
 
                 CurrencyOption(
                     title = "Toman",
-                    selected = selectedCurrency == "Toman",
+                    selected = selectedCurrency.value == "Toman",
                     onClick = {
-                        selectedCurrency = "Toman"
+                        viewModel.saveCurrency("Toman")
                     }
                 )
             }
+        }
+
+        TextButton(
+            onClick = onBackClick
+        ) {
+            Text("Back")
         }
     }
 }

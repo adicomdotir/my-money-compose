@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +24,7 @@ class ReportViewModel @Inject constructor(): ViewModel() {
     }
 
     fun sample() {
+
         viewModelScope.launch {
             val user = async {
                 getUser()
@@ -41,7 +43,6 @@ class ReportViewModel @Inject constructor(): ViewModel() {
 
     suspend fun getUser(): String {
         delay(5000)
-        throw Exception("Error")
         return "Ali"
     }
 
