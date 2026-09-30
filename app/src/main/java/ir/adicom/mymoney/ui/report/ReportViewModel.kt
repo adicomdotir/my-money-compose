@@ -4,20 +4,34 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ir.adicom.mymoney.data.repository.SettingRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 @HiltViewModel
-class ReportViewModel @Inject constructor(): ViewModel() {
+class ReportViewModel @Inject constructor(
+    private val repository: SettingRepository
+): ViewModel() {
     private val _state = MutableStateFlow(
         ""
     )
     val state = _state.asStateFlow()
+
+    val currency: StateFlow<String> =
+        repository.getCurrency()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                "Rial"
+            )
 
     init {
         sample()

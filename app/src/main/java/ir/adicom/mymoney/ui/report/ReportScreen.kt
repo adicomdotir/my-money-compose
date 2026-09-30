@@ -13,10 +13,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.ui.components.CustomAppBar
 
 @Composable
@@ -24,6 +26,8 @@ fun ReportScreen(
     viewModel: ReportViewModel = hiltViewModel(),
     onBackClick: () -> Unit
 ) {
+    val currency by viewModel.currency.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = {
             CustomAppBar(
@@ -46,28 +50,28 @@ fun ReportScreen(
 
                 ReportSummary(
                     title = "Daily",
-                    amount = "500$"
+                    amount = "500 $currency"
                 )
             }
 
             item {
                 ReportSummary(
                     title = "Weekly",
-                    amount = "1,500$"
+                    amount = "1,500 $currency"
                 )
             }
 
             item {
                 ReportSummary(
                     title = "Monthly",
-                    amount = "4,000$"
+                    amount = "4,000$ $currency"
                 )
             }
 
             item {
                 ReportSummary(
                     title = "Yearly",
-                    amount = "60,000$"
+                    amount = "60,000$ $currency"
                 )
             }
 
@@ -83,7 +87,7 @@ fun ReportScreen(
             items(10) {
                 CategoryReportItem(
                     category = "Category Name $it",
-                    amount = "${50 * it}$"
+                    amount = "${50 * it} $currency"
                 )
             }
 

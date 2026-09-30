@@ -167,4 +167,22 @@ class CoroutineTest {
 
         println("Finished")
     }
+
+    @Test
+    fun testCancellation09() = runBlocking {
+        coroutineScope {
+            launch {
+                delay(1000)
+
+                println("A")
+            }
+
+            launch {
+                delay(3000)
+                println("B")
+            }
+        }
+
+        println("C")
+    }
 }

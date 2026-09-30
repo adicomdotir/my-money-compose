@@ -33,10 +33,13 @@ class CategoryViewModel @Inject constructor(
     private val _selectedCategory = MutableStateFlow<Category?>(null)
     val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
 
+    var xxx: StateFlow<List<Category>> = MutableStateFlow(emptyList())
+
     /**
      * اضافه کردن دسته‌بندی جدید
      */
     fun addCategory(title: String, color: String) {
+
         if (title.isEmpty()) {
             _errorMessage.value = "عنوان دسته‌بندی نمی‌تواند خالی باشد"
             return
