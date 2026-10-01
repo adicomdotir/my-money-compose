@@ -9,13 +9,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import ir.adicom.mymoney.ui.navigation.AppNavHost
 import ir.adicom.mymoney.ui.theme.MyMoneyTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.coroutines.cancellation.CancellationException
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
