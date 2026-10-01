@@ -47,9 +47,7 @@ object DateUtils {
         val isJLeapYear: Boolean
         if (jDayNo >= 366) {
             jDayNo--
-            isJLeapYear = false
         } else {
-            isJLeapYear = true
         }
 
         val jm2 = (jDayNo / 31)

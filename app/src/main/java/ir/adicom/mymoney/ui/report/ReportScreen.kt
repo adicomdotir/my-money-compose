@@ -64,14 +64,14 @@ fun ReportScreen(
             item {
                 ReportSummary(
                     title = "Monthly",
-                    amount = "4,000$ $currency"
+                    amount = "4,000 $currency"
                 )
             }
 
             item {
                 ReportSummary(
                     title = "Yearly",
-                    amount = "60,000$ $currency"
+                    amount = "60,000 $currency"
                 )
             }
 

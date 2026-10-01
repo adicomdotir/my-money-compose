@@ -14,13 +14,6 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
     }
 
     /**
-     * دریافت دسته‌بندی بر اساس ID
-     */
-    fun getCategoryById(id: Int): Flow<Category?> {
-        return categoryDao.getCategoryById(id)
-    }
-
-    /**
      * اضافه کردن دسته‌بندی جدید
      */
     suspend fun insertCategory(category: Category) {

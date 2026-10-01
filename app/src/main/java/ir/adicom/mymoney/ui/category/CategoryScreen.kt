@@ -214,7 +214,6 @@ fun CategoryScreen(
             category = selectedCategory,
             isEditMode = isEditMode,
             onDismiss = {
-                showFormDialog = false
                 viewModel.clearSelection()
             },
             onSave = { title, color ->
@@ -223,7 +222,6 @@ fun CategoryScreen(
                 } else {
                     viewModel.addCategory(title, color)
                 }
-                showFormDialog = false
                 viewModel.clearSelection()
             }
         )
