@@ -9,7 +9,8 @@ fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
     title = title,
     category = category,
     amount = amount,
-    type = type.name
+    type = type.name,
+    timestamp = timestamp
 )
 
 fun TransactionEntity.toDomain(): Transaction = Transaction(
@@ -19,5 +20,6 @@ fun TransactionEntity.toDomain(): Transaction = Transaction(
     amount = amount,
     type = runCatching {
         TransactionType.valueOf(type)
-    }.getOrDefault(TransactionType.EXPENSE)
+    }.getOrDefault(TransactionType.EXPENSE),
+    timestamp = timestamp
 )

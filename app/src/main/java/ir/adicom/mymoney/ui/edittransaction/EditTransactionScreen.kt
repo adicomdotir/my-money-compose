@@ -36,6 +36,7 @@ import ir.adicom.mymoney.ui.addtransaction.AppTextField
 import ir.adicom.mymoney.ui.addtransaction.TransactionFormError
 import ir.adicom.mymoney.ui.addtransaction.hasError
 import ir.adicom.mymoney.ui.addtransaction.validateForm
+import java.sql.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,6 +201,7 @@ fun EditTransactionScreen(
                                 category = categoryTxtField,
                                 amount = amountTxtField.toDoubleOrNull() ?: 0.0,
                                 type = selectedType,
+                                timestamp = System.currentTimeMillis()
                             )
                         )
                     },

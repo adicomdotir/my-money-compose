@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.domain.model.TransactionType
+import ir.adicom.mymoney.utils.DateUtils
 
 
 @ExperimentalMaterial3Api
@@ -138,6 +139,7 @@ fun TransactionItem(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(transaction.title)
             Text(transaction.formattedAmount, color = transaction.amountColor)
+            Text(DateUtils.convertTimestampToShamsi(transaction.timestamp))
             IconButton(
                 onClick = onClick,
                 enabled = deleteEnabled

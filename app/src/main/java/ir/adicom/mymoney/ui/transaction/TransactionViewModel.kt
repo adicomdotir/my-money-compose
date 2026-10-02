@@ -61,7 +61,8 @@ class TransactionViewModel @Inject constructor(
                     title = event.title,
                     category = event.category,
                     amount = event.amount,
-                    type = event.type
+                    type = event.type,
+                    timestamp = System.currentTimeMillis()
                 )
             }
 
@@ -89,7 +90,8 @@ class TransactionViewModel @Inject constructor(
         title: String,
         category: String,
         amount: Double,
-        type: TransactionType
+        type: TransactionType,
+        timestamp: Long
     ) {
         viewModelScope.launch {
             _operationState.value = OperationState.Adding
@@ -99,7 +101,8 @@ class TransactionViewModel @Inject constructor(
                     title = title,
                     category = category,
                     amount = amount,
-                    type = type
+                    type = type,
+                    timestamp = System.currentTimeMillis()
                 )
                 repository.addTransaction(
                     transaction

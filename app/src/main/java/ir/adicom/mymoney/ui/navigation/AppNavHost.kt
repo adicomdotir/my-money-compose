@@ -22,7 +22,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Report.route
+        startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
             TransactionScreen(
