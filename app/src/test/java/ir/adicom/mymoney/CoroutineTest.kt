@@ -185,4 +185,53 @@ class CoroutineTest {
 
         println("C")
     }
+
+    @Test
+    fun testCancellation10() = runBlocking {
+        supervisorScope {
+            val user = async {
+                delay(5000)
+                "User"
+            }
+
+            val transactions = async {
+                delay(1000)
+                "Transactions"
+            }
+
+            delay(500)
+
+            user.cancel()
+
+            println("After cancel")
+
+            val result = transactions.await()
+            println(result)
+        }
+    }
+
+    @Test
+    fun testCancellation11() = runBlocking {
+        supervisorScope {
+            val user = async {
+                throw Exception("User failed")
+            }
+
+            val transactions = async {
+                delay(3000)
+                "Transactions loaded"
+            }
+
+            try {
+                user.await()
+            } catch (e: Exception) {
+                println("User error")
+            }
+
+            delay(1000)
+
+            val result = transactions.await()
+            println(result)
+        }
+    }
 }
