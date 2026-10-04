@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
 import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
+import ir.adicom.mymoney.ui.home.HomeScreen
 import ir.adicom.mymoney.ui.report.ReportScreen
 import ir.adicom.mymoney.ui.setting.SettingScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
@@ -25,6 +26,10 @@ fun AppNavHost(
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
+            HomeScreen()
+        }
+
+        composable(Screen.Transaction.route) {
             TransactionScreen(
                 onOpenAdd = {
                     navController.navigate(Screen.AddTransaction.route)

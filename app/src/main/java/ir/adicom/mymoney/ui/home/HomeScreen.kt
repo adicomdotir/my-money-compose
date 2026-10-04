@@ -1,172 +1,153 @@
 package ir.adicom.mymoney.ui.home
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
 import androidx.compose.ui.unit.dp
-import ir.adicom.mymoney.ui.category.CategoryScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.adicom.mymoney.ui.components.CustomAppBar
 
-/**
- * HomeScreen - صفحه خانه
- */
 @Composable
-fun HomeScreen() {
-    var selectedTab by remember { mutableIntStateOf(0) }
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
+    val currency by viewModel.currency.collectAsStateWithLifecycle()
 
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                selectedTab = selectedTab,
-                onTabSelected = { selectedTab = it }
+        topBar = {
+            CustomAppBar(
+                title = "Home",
+                onBackClick = {}
             )
         }
-    ) { innerPadding ->
-        Column(
+    ) { paddingValues ->
+
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            when (selectedTab) {
-                0 -> DashboardScreen()      // صفحه خانه
-                1 -> CategoryScreen()       // دسته‌بندی‌ها
-                2 -> ExpenseListScreen()    // هزینه‌ها
-                3 -> ReportsScreen()        // گزارش‌ها
-                4 -> SettingsScreen()       // تنظیمات
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ReportSummary(
+                    title = "Daily",
+                    amount = "500 $currency"
+                )
+            }
+
+            item {
+                ReportSummary(
+                    title = "Weekly",
+                    amount = "1,500 $currency"
+                )
+            }
+
+            item {
+                ReportSummary(
+                    title = "Monthly",
+                    amount = "4,000 $currency"
+                )
+            }
+
+            item {
+                ReportSummary(
+                    title = "Yearly",
+                    amount = "60,000 $currency"
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Categories",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
+            items(10) {
+                CategoryReportItem(
+                    category = "Category Name $it",
+                    amount = "${50 * it} $currency"
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
 
-/**
- * BottomNavigationBar - نوار ناوبری پایین
- */
 @Composable
-fun BottomNavigationBar(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit
+private fun ReportSummary(
+    title: String,
+    amount: String
 ) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = { onTabSelected(0) },
-            icon = { Icon(Icons.Default.Home, contentDescription = "خانه") },
-            label = { Text("خانه") }
-        )
+    Card(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
 
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = { onTabSelected(1) },
-            icon = { Icon(Icons.Default.List, contentDescription = "دسته‌بندی") },
-            label = { Text("دسته‌بندی") }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 2,
-            onClick = { onTabSelected(2) },
-            icon = { Icon(Icons.Default.List, contentDescription = "هزینه‌ها") },
-            label = { Text("هزینه‌ها") }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 3,
-            onClick = { onTabSelected(3) },
-            icon = { Icon(Icons.Default.List, contentDescription = "گزارش‌ها") },
-            label = { Text("گزارش‌ها") }
-        )
-
-        NavigationBarItem(
-            selected = selectedTab == 4,
-            onClick = { onTabSelected(4) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "تنظیمات") },
-            label = { Text("تنظیمات") }
-        )
+            Text(
+                text = amount,
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
-/**
- * DashboardScreen - صفحه خانه
- */
 @Composable
-fun DashboardScreen() {
-    Column(
+private fun CategoryReportItem(
+    category: String,
+    amount: String
+) {
+    Row(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .fillMaxWidth()
+            .padding(
+                horizontal = 8.dp,
+                vertical = 12.dp
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            "خانه",
-            style = MaterialTheme.typography.headlineMedium
+            text = category,
+            style = MaterialTheme.typography.bodyMedium
         )
-        Text("خلاصه هزینه‌های شما اینجا نمایش داده می‌شود")
-    }
-}
 
-/**
- * ExpenseListScreen - صفحه هزینه‌ها
- */
-@Composable
-fun ExpenseListScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
         Text(
-            "هزینه‌ها",
-            style = MaterialTheme.typography.headlineMedium
+            text = amount,
+            style = MaterialTheme.typography.bodyMedium
         )
-        Text("لیست هزینه‌های شما اینجا نمایش داده می‌شود")
-    }
-}
-
-/**
- * ReportsScreen - صفحه گزارش‌ها
- */
-@Composable
-fun ReportsScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            "گزارش‌ها",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text("گزارش‌های تفصیلی اینجا نمایش داده می‌شود")
-    }
-}
-
-/**
- * SettingsScreen - صفحه تنظیمات
- */
-@Composable
-fun SettingsScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            "تنظیمات",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text("تنظیمات اپلیکیشن اینجا قرار خواهد گرفت")
     }
 }
