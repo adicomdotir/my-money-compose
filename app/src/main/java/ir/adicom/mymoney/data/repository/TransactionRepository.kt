@@ -5,6 +5,7 @@ import ir.adicom.mymoney.data.dao.TransactionDao
 import ir.adicom.mymoney.data.entity.TransactionEntity
 import ir.adicom.mymoney.data.mapper.toDomain
 import ir.adicom.mymoney.data.mapper.toEntity
+import ir.adicom.mymoney.domain.model.CategorySummary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -44,5 +45,14 @@ class TransactionRepository @Inject constructor(
     suspend fun updateTransaction(transaction: Transaction) {
         delay(2000L)
         transactionDao.updateTransaction(transaction = transaction.toEntity())
+    }
+
+    fun getTotalAmountSince(type: String, startTime: Long): Flow<Double?> {
+        return transactionDao.getTotalAmountSince(type, startTime)
+    }
+
+    fun getCategorySummariesSince(type: String, startTime: Long): Flow<List<CategorySummary>> {
+        val res = transactionDao.getCategorySummariesSince(type, startTime)
+        return res.map { entities -> entities.map { it.toDomain() } }
     }
 }

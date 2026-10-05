@@ -1,6 +1,7 @@
 package ir.adicom.mymoney.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +29,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val currency by viewModel.currency.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -36,62 +40,61 @@ fun HomeScreen(
         }
     ) { paddingValues ->
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                ReportSummary(
-                    title = "Daily",
-                    amount = "500 $currency"
-                )
+        if (uiState.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
 
-            item {
-                ReportSummary(
-                    title = "Weekly",
-                    amount = "1,500 $currency"
-                )
-            }
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            item {
-                ReportSummary(
-                    title = "Monthly",
-                    amount = "4,000 $currency"
-                )
-            }
+                    ReportSummary(
+                        title = "Daily",
+                        amount = "${uiState.dailyExpense} $currency"
+                    )
+                }
 
-            item {
-                ReportSummary(
-                    title = "Yearly",
-                    amount = "60,000 $currency"
-                )
-            }
+                item {
+                    ReportSummary(
+                        title = "Weekly",
+                        amount = "${uiState.weeklyExpense} $currency"
+                    )
+                }
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    ReportSummary(
+                        title = "Monthly",
+                        amount = "${uiState.monthlyExpense} $currency"
+                    )
+                }
 
-                Text(
-                    text = "Categories",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            items(10) {
-                CategoryReportItem(
-                    category = "Category Name $it",
-                    amount = "${50 * it} $currency"
-                )
-            }
+                    Text(
+                        text = "Categories",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                items(uiState.categorySummaries) {
+                    CategoryReportItem(
+                        category = "${it.category}",
+                        amount = "${it.totalAmount} $currency"
+                    )
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
