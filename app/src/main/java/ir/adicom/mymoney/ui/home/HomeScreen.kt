@@ -28,6 +28,7 @@ import ir.adicom.mymoney.ui.components.CustomAppBar
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+
     val currency by viewModel.currency.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 

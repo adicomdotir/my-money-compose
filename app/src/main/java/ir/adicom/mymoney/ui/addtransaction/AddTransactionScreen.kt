@@ -2,10 +2,17 @@ package ir.adicom.mymoney.ui.addtransaction
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CalendarLocale
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,13 +20,19 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -32,6 +45,10 @@ import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transaction.TransactionEvent
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.transaction.TransactionViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 data class TransactionFormError(
     val title: String? = null,
@@ -68,6 +85,7 @@ fun AddTransactionScreen(
                 TransactionEffect.TransactionAdded -> {
                     onBack()
                 }
+
                 else -> Unit
             }
         }
@@ -172,6 +190,53 @@ fun AddTransactionScreen(
                     }
                 }
             }
+
+
+            val openDialog = remember { mutableStateOf(false) }
+            val selectedDate = remember { mutableStateOf(0L) }
+
+            Row() {
+                TextButton(
+                    onClick = {
+                        openDialog.value = true
+                    }
+                ) {
+                    Text("Select Date")
+                }
+                Text("Selected Date : ${SimpleDateFormat("dd-MM-yyyy").format(Date(selectedDate.value))}")
+            }
+
+            if (openDialog.value) {
+                val datePickerState = rememberDatePickerState()
+                val confirmEnabled = remember {
+                    derivedStateOf { datePickerState.selectedDateMillis != null }
+                }
+                DatePickerDialog(
+                    onDismissRequest = {
+                        openDialog.value = false
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDialog.value = false
+                                selectedDate.value = datePickerState.selectedDateMillis ?: 0L
+                            },
+                            enabled = confirmEnabled.value,
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { openDialog.value = false }) { Text("Cancel") }
+                    },
+                ) {
+                    DatePicker(
+                        state = datePickerState,
+                        modifier = Modifier.verticalScroll(rememberScrollState()),
+                    )
+                }
+            }
+
             ElevatedButton(
                 onClick = {
                     formError = validateForm(
@@ -192,6 +257,7 @@ fun AddTransactionScreen(
                             category = categoryTxtField,
                             amount = amountTxtField.toDoubleOrNull() ?: 0.0,
                             type = selectedType,
+                            time = selectedDate.value
                         )
                     )
                 },

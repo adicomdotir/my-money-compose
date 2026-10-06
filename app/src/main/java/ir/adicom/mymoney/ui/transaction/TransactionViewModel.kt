@@ -62,7 +62,7 @@ class TransactionViewModel @Inject constructor(
                     category = event.category,
                     amount = event.amount,
                     type = event.type,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = event.time
                 )
             }
 

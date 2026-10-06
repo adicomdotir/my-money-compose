@@ -8,7 +8,8 @@ sealed interface TransactionEvent {
         val title: String,
         val category: String,
         val amount: Double,
-        val type: TransactionType
+        val type: TransactionType,
+        val time: Long
     ) : TransactionEvent
 
     data class DeleteTransaction(val transaction: Transaction) : TransactionEvent
