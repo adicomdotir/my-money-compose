@@ -102,7 +102,7 @@ class TransactionViewModel @Inject constructor(
                     category = category,
                     amount = amount,
                     type = type,
-                    timestamp = System.currentTimeMillis()
+                    timestamp = timestamp
                 )
                 repository.addTransaction(
                     transaction
