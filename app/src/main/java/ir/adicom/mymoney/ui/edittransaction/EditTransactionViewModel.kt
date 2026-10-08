@@ -15,10 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class EditTransactionUiState(
-    val transaction: Transaction? = null, val isLoading: Boolean = true, val error: String? = null
-)
-
 @HiltViewModel
 class EditTransactionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle, private val repository: TransactionRepository

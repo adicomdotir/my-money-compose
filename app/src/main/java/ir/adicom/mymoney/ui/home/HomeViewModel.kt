@@ -5,8 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.adicom.mymoney.data.repository.SettingRepository
 import ir.adicom.mymoney.data.repository.TransactionRepository
-import ir.adicom.mymoney.domain.model.CategorySummary
-import ir.adicom.mymoney.domain.model.Transaction
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -14,26 +13,22 @@ import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 import javax.inject.Inject
 
-data class HomeUiState(
-    val dailyExpense: Double = 0.0,
-    val weeklyExpense: Double = 0.0,
-    val monthlyExpense: Double = 0.0,
-    val categorySummaries: List<CategorySummary> = emptyList(),
-    val isLoading: Boolean = true
-)
-
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     settingRepository: SettingRepository,
     private val transactionRepository: TransactionRepository
-): ViewModel() {
-    private val expenseType = "EXPENSE" // یا انام مربوطه
+) : ViewModel() {
+    private val expenseType = "EXPENSE"
 
     val uiState: StateFlow<HomeUiState> = combine(
         transactionRepository.getTotalAmountSince(expenseType, getStartOfToday()),
         transactionRepository.getTotalAmountSince(expenseType, getStartOfWeek()),
         transactionRepository.getTotalAmountSince(expenseType, getStartOfMonth()),
-        transactionRepository.getCategorySummariesSince(expenseType, getStartOfMonth()), // دسته‌بندی‌های ماه جاری
+        transactionRepository.getCategorySummariesSince(
+            expenseType,
+            getStartOfMonth()
+        ),
     ) { daily, weekly, monthly, categories ->
         HomeUiState(
             dailyExpense = daily ?: 0.0,
