@@ -39,7 +39,8 @@ import kotlinx.coroutines.launch
 enum class DrawerItem {
     Report,
     Setting,
-    Transaction
+    Transaction,
+    Sample
 }
 
 @Composable
@@ -89,6 +90,14 @@ fun HomeScreen(
                         .padding(16.dp)
                         .clickable(onClick = {
                             onDrawerClick(DrawerItem.Transaction)
+                        })
+                )
+                Text(
+                    "Sample",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable(onClick = {
+                            onDrawerClick(DrawerItem.Sample)
                         })
                 )
             }

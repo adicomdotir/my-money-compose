@@ -14,6 +14,7 @@ import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
 import ir.adicom.mymoney.ui.home.DrawerItem
 import ir.adicom.mymoney.ui.home.HomeScreen
 import ir.adicom.mymoney.ui.report.ReportScreen
+import ir.adicom.mymoney.ui.sample.SampleScreen
 import ir.adicom.mymoney.ui.setting.SettingScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 
@@ -33,6 +34,7 @@ fun AppNavHost(
                         DrawerItem.Report -> navController.navigate(Screen.Report.route)
                         DrawerItem.Setting -> navController.navigate(Screen.Setting.route)
                         DrawerItem.Transaction -> navController.navigate(Screen.Transaction.route)
+                        DrawerItem.Sample -> navController.navigate(Screen.Sample.route)
                     }
                 },
             )
@@ -96,6 +98,16 @@ fun AppNavHost(
             ReportScreen(
                 onBackClick = {
                     navController.navigate(Screen.Setting.route)
+                }
+            )
+        }
+
+        composable(
+            Screen.Sample.route
+        ) {
+            SampleScreen(
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
