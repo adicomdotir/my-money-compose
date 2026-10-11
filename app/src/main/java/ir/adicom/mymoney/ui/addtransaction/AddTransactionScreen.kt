@@ -1,54 +1,63 @@
 package ir.adicom.mymoney.ui.addtransaction
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CalendarLocale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.CustomAppBar
 import ir.adicom.mymoney.ui.transaction.OperationState
 import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transaction.TransactionEvent
-import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.transaction.TransactionViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 data class TransactionFormError(
     val title: String? = null,
@@ -166,12 +175,14 @@ fun AddTransactionScreen(
                         expanded = !expanded
                     }
                 ) {
-                    TextField(
+                    OutlinedTextField(
                         value = selectedType.name,
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
 
                     ExposedDropdownMenu(
@@ -191,20 +202,15 @@ fun AddTransactionScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
 
             val openDialog = remember { mutableStateOf(false) }
-            val selectedDate = remember { mutableStateOf(0L) }
+            val selectedDate = remember { mutableLongStateOf(0L) }
 
-            Row() {
-                TextButton(
-                    onClick = {
-                        openDialog.value = true
-                    }
-                ) {
-                    Text("Select Date")
-                }
-                Text("Selected Date : ${SimpleDateFormat("dd-MM-yyyy").format(Date(selectedDate.value))}")
-            }
+            DateSelectedField(
+                selectedDate.value,
+                onClick = { openDialog.value = true }
+            )
 
             if (openDialog.value) {
                 val datePickerState = rememberDatePickerState()
@@ -265,6 +271,51 @@ fun AddTransactionScreen(
             ) {
                 Text("Add")
             }
+        }
+    }
+}
+
+@Composable
+fun DateSelectedField(selectedDate: Long, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // Label + Selected date stacked vertically
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Selected Date",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = remember(selectedDate) {
+                    SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                        .format(Date(selectedDate))
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        // Action button with icon
+        FilledTonalButton(
+            onClick = onClick,
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Select")
         }
     }
 }
