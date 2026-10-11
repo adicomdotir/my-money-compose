@@ -2,16 +2,20 @@ package ir.adicom.mymoney.ui.transaction
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ElevatedButton
@@ -20,14 +24,20 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -132,25 +142,77 @@ fun TransactionItem(
     transaction: Transaction,
     onClick: () -> Unit,
     deleteEnabled: Boolean,
-    onDetailClick: (Long) -> Unit
+    onDetailClick: (Long) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = Modifier
-            .clickable {
-                onDetailClick(transaction.id)
+    ListItem(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.medium)
+            .clickable { onDetailClick(transaction.id) }
+            .semantics(mergeDescendants = true) {},
+        leadingContent = {
+            CategoryAvatar(category = transaction.category)
+        },
+        headlineContent = {
+            Text(
+                text = transaction.title,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        supportingContent = {
+            Text(
+                text = transaction.category,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        trailingContent = {
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = transaction.formattedAmount,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = transaction.amountColor,
+                )
+                Text(
+                    text = DateUtils.convertTimestampToShamsi(transaction.timestamp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
+        },
+    )
+
+    // Delete action as a separate, discoverable affordance
+    AppIconButton(
+        icon = Icons.Outlined.Delete,
+        contentDescription = "Delete ${transaction.title}",
+        enabled = deleteEnabled,
+        tint = MaterialTheme.colorScheme.error,
+        onClick = onClick,
+        modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+    )
+}
+
+@Composable
+private fun CategoryAvatar(category: String) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = Modifier.size(40.dp),
     ) {
-        Text(transaction.category)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(transaction.title)
-            Text(transaction.formattedAmount, color = transaction.amountColor)
-            Text(DateUtils.convertTimestampToShamsi(transaction.timestamp))
-            AppIconButton(
-                icon = Icons.Default.Delete,
-                contentDescription = "Delete",
-                enabled = deleteEnabled,
-                tint = MaterialTheme.colorScheme.error,
-                onClick = onClick
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = category.take(1).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         }
     }
