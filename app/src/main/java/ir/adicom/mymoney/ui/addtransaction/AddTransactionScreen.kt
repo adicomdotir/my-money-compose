@@ -45,11 +45,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.adicom.mymoney.R
 import ir.adicom.mymoney.domain.model.TransactionType
+import ir.adicom.mymoney.ui.components.AppButton
 import ir.adicom.mymoney.ui.components.CustomAppBar
 import ir.adicom.mymoney.ui.transaction.OperationState
 import ir.adicom.mymoney.ui.transaction.TransactionEffect
@@ -243,7 +246,9 @@ fun AddTransactionScreen(
                 }
             }
 
-            ElevatedButton(
+            AppButton(
+                text = "Add",
+                loading = operationState is OperationState.Adding,
                 onClick = {
                     formError = validateForm(
                         title = titleTxtField,
@@ -254,7 +259,7 @@ fun AddTransactionScreen(
                     hasSubmitted = true
 
                     if (formError.hasError()) {
-                        return@ElevatedButton
+                        return@AppButton
                     }
 
                     viewModel.onEvent(
@@ -266,11 +271,8 @@ fun AddTransactionScreen(
                             time = selectedDate.value
                         )
                     )
-                },
-                enabled = operationState !is OperationState.Adding
-            ) {
-                Text("Add")
-            }
+                }
+            )
         }
     }
 }
@@ -310,7 +312,7 @@ fun DateSelectedField(selectedDate: Long, onClick: () -> Unit) {
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Settings,
+                painter = painterResource(R.drawable.calendar_icon),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )

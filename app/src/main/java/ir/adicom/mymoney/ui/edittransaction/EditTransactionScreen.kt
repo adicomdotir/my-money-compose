@@ -36,6 +36,7 @@ import ir.adicom.mymoney.ui.addtransaction.AppTextField
 import ir.adicom.mymoney.ui.addtransaction.TransactionFormError
 import ir.adicom.mymoney.ui.addtransaction.hasError
 import ir.adicom.mymoney.ui.addtransaction.validateForm
+import ir.adicom.mymoney.ui.components.AppButton
 import java.sql.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,7 +160,9 @@ fun EditTransactionScreen(
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                            modifier = Modifier.fillMaxWidth().menuAnchor()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
                         )
 
                         ExposedDropdownMenu(
@@ -179,7 +182,7 @@ fun EditTransactionScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                ElevatedButton(
+                AppButton(
                     onClick = {
                         val error = validateForm(
                             title = titleTxtField,
@@ -191,7 +194,7 @@ fun EditTransactionScreen(
                         hasSubmitted = true
 
                         if (error.hasError()) {
-                            return@ElevatedButton
+                            return@AppButton
                         }
 
                         viewModel.updateTransaction(
@@ -205,10 +208,9 @@ fun EditTransactionScreen(
                             )
                         )
                     },
-                    enabled = operationState !is OperationState.Updating
-                ) {
-                    Text("Edit")
-                }
+                    loading = operationState !is OperationState.Updating,
+                    text = "Edit"
+                )
             }
         }
     }
