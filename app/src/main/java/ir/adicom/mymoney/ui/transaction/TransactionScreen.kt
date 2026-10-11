@@ -35,6 +35,7 @@ import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppButton
 import ir.adicom.mymoney.ui.components.AppButtonVariant
+import ir.adicom.mymoney.ui.components.AppIconButton
 import ir.adicom.mymoney.utils.DateUtils
 
 
@@ -144,16 +145,13 @@ fun TransactionItem(
             Text(transaction.title)
             Text(transaction.formattedAmount, color = transaction.amountColor)
             Text(DateUtils.convertTimestampToShamsi(transaction.timestamp))
-            IconButton(
-                onClick = onClick,
-                enabled = deleteEnabled
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
+            AppIconButton(
+                icon = Icons.Default.Delete,
+                contentDescription = "Delete",
+                enabled = deleteEnabled,
+                tint = MaterialTheme.colorScheme.error,
+                onClick = onClick
+            )
         }
     }
 }
