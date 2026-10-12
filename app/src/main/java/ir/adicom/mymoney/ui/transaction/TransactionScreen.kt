@@ -13,17 +13,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -43,8 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.domain.model.TransactionType
-import ir.adicom.mymoney.ui.components.AppButton
-import ir.adicom.mymoney.ui.components.AppButtonVariant
 import ir.adicom.mymoney.ui.components.AppIconButton
 import ir.adicom.mymoney.utils.DateUtils
 
@@ -64,7 +59,7 @@ fun TransactionScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("My Money")
+                    Text("Transactions")
                 }
             )
         },
