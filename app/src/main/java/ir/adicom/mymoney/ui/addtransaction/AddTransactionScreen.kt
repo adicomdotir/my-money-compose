@@ -14,16 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -53,7 +47,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.R
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppButton
+import ir.adicom.mymoney.ui.components.AppTextField
 import ir.adicom.mymoney.ui.components.CustomAppBar
+import ir.adicom.mymoney.ui.components.DateSelectedField
 import ir.adicom.mymoney.ui.transaction.OperationState
 import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transaction.TransactionEvent
@@ -277,73 +273,6 @@ fun AddTransactionScreen(
     }
 }
 
-@Composable
-fun DateSelectedField(selectedDate: Long, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        // Label + Selected date stacked vertically
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = "Selected Date",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = remember(selectedDate) {
-                    SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                        .format(Date(selectedDate))
-                },
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        // Action button with icon
-        FilledTonalButton(
-            onClick = onClick,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.calendar_icon),
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Select")
-        }
-    }
-}
-
-@Composable
-fun AppTextField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(),
-    error: String
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = keyboardOptions,
-        isError = error.isNotEmpty(),
-        supportingText = {
-            if (error.isNotEmpty()) {
-                Text(error)
-            }
-        }
-    )
-}
 
 fun validateForm(
     title: String,
