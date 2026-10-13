@@ -1,16 +1,11 @@
 package ir.adicom.mymoney.ui.addtransaction
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -21,9 +16,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,14 +29,11 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ir.adicom.mymoney.R
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppButton
 import ir.adicom.mymoney.ui.components.AppTextField
@@ -54,15 +43,8 @@ import ir.adicom.mymoney.ui.transaction.OperationState
 import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transaction.TransactionEvent
 import ir.adicom.mymoney.ui.transaction.TransactionViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
-data class TransactionFormError(
-    val title: String? = null,
-    val category: String? = null,
-    val amount: String? = null
-)
+import ir.adicom.mymoney.ui.transactionform.TransactionFormError
+import ir.adicom.mymoney.ui.transactionform.validateForm
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -271,26 +253,6 @@ fun AddTransactionScreen(
             )
         }
     }
-}
-
-
-fun validateForm(
-    title: String,
-    category: String,
-    amount: String
-): TransactionFormError {
-    val parsedAmount = amount.toDoubleOrNull()
-
-    return TransactionFormError(
-        title = if (title.isBlank()) "Fill title" else null,
-        category = if (category.isBlank()) "Fill category" else null,
-        amount = when {
-            amount.isBlank() -> "Fill amount"
-            parsedAmount == null -> "Invalid amount"
-            parsedAmount <= 0 -> "Amount must be greater than 0"
-            else -> null
-        }
-    )
 }
 
 fun TransactionFormError.hasError(): Boolean =
