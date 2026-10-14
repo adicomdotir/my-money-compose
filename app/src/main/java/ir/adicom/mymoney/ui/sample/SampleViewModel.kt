@@ -1,5 +1,6 @@
 package ir.adicom.mymoney.ui.sample
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ class SampleViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<SampleUiState> = _uiState.asStateFlow()
 
     init {
+        Log.e("TAG", "Init $this ${this.hashCode()}")
         loadItems()
     }
 

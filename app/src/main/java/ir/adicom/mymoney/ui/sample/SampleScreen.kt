@@ -29,7 +29,8 @@ import ir.adicom.mymoney.ui.components.CustomAppBar
 @Composable
 fun SampleScreen(
     viewModel: SampleViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    goDetail: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -74,11 +75,21 @@ fun SampleScreen(
                 }
             }
 
-            Button(
-                onClick = viewModel::onIncrementClick,
-                modifier = Modifier.fillMaxWidth()
+            Row(
+
             ) {
-                Text("Increment")
+                Button(
+                    onClick = viewModel::onIncrementClick,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Increment")
+                }
+                Button(
+                    onClick = goDetail,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Go Detail")
+                }
             }
 
             Button(
