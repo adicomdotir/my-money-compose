@@ -9,6 +9,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,9 +23,22 @@ class SampleViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(SampleUiState())
     val uiState: StateFlow<SampleUiState> = _uiState.asStateFlow()
 
+
     init {
-        Log.e("TAG", "Init $this ${this.hashCode()}")
+        Log.e("TAG", "Init $this")
         loadItems()
+        viewModelScope.launch {
+            val flow = flowOf(1, 2).onEach { delay(10) }
+            val flow2 = flowOf("a", "b", "c").onEach { delay(15) }
+            combine(flow, flow2) { i, s -> i.toString() + s }.collect {
+                println(it) // Will print "1a 2a 2b 2c"
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.e("TAG", "OnCleared $this")
     }
 
     fun onIncrementClick() {
