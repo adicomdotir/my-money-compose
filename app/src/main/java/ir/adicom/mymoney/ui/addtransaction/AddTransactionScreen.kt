@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppButton
+import ir.adicom.mymoney.ui.components.AppDatePickerDialog
 import ir.adicom.mymoney.ui.components.AppTextField
 import ir.adicom.mymoney.ui.components.CustomAppBar
 import ir.adicom.mymoney.ui.components.DateSelectedField
@@ -194,34 +195,14 @@ fun AddTransactionScreen(
             )
 
             if (openDialog.value) {
-                val datePickerState = rememberDatePickerState()
-                val confirmEnabled = remember {
-                    derivedStateOf { datePickerState.selectedDateMillis != null }
-                }
-                DatePickerDialog(
-                    onDismissRequest = {
+                AppDatePickerDialog(
+                    initialSelectedDateMillis = selectedDate.value.takeIf { it != 0L },
+                    onDismissRequest = { openDialog.value = false },
+                    onDateSelected = { millis ->
+                        selectedDate.value = millis
                         openDialog.value = false
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                openDialog.value = false
-                                selectedDate.value = datePickerState.selectedDateMillis ?: 0L
-                            },
-                            enabled = confirmEnabled.value,
-                        ) {
-                            Text("OK")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { openDialog.value = false }) { Text("Cancel") }
-                    },
-                ) {
-                    DatePicker(
-                        state = datePickerState,
-                        modifier = Modifier.verticalScroll(rememberScrollState()),
-                    )
-                }
+                    }
+                )
             }
 
             AppButton(
