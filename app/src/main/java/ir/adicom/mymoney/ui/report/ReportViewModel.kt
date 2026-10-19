@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.adicom.mymoney.data.repository.SettingRepository
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,14 +44,25 @@ class ReportViewModel @Inject constructor(
         sample()
     }
 
+    private val retryCount = MutableStateFlow(0)
+    val mutex = Mutex()
+
+    fun retry() {
+        if(!mutex.tryLock()) {
+            retryCount.update { it + 1 }
+        }
+    }
+
     override fun onCleared() {
         Log.e("TAG", "OnCleared")
         super.onCleared()
     }
 
     fun sample() {
-
         viewModelScope.launch {
+            supervisorScope {
+
+            }
 
             sample2()
 

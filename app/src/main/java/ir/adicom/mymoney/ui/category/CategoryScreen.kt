@@ -55,9 +55,7 @@ fun CategoryScreen(
 ) {
     // State Management
     val categories by viewModel.categories.collectAsState(emptyList())
-    val isLoading by viewModel.isLoading.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     var showFormDialog by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
@@ -93,7 +91,7 @@ fun CategoryScreen(
         }
 
         // Error Message
-        if (errorMessage != null) {
+        if (uiState.errorMessage != null) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +116,7 @@ fun CategoryScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                     Text(
-                        text = errorMessage!!,
+                        text = uiState.errorMessage!!,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1f)
@@ -128,7 +126,7 @@ fun CategoryScreen(
         }
 
         // Loading Indicator
-        if (isLoading) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -211,14 +209,14 @@ fun CategoryScreen(
     // Form Dialog
     if (showFormDialog) {
         CategoryFormDialog(
-            category = selectedCategory,
+            category = uiState.selectedCategory,
             isEditMode = isEditMode,
             onDismiss = {
                 viewModel.clearSelection()
             },
             onSave = { title, color ->
-                if (isEditMode && selectedCategory != null) {
-                    viewModel.updateCategory(selectedCategory!!.id, title, color)
+                if (isEditMode && uiState.selectedCategory != null) {
+                    viewModel.updateCategory(uiState.selectedCategory!!.id, title, color)
                 } else {
                     viewModel.addCategory(title, color)
                 }

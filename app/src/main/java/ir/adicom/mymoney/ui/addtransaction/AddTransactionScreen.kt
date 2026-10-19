@@ -45,6 +45,7 @@ import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transaction.TransactionEvent
 import ir.adicom.mymoney.ui.transaction.TransactionViewModel
 import ir.adicom.mymoney.ui.transactionform.TransactionFormError
+import ir.adicom.mymoney.ui.transactionform.hasError
 import ir.adicom.mymoney.ui.transactionform.validateForm
 
 
@@ -145,8 +146,6 @@ fun AddTransactionScreen(
                 error = if (hasSubmitted) formError.amount ?: "" else ""
             )
 
-
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -235,7 +234,3 @@ fun AddTransactionScreen(
         }
     }
 }
-
-fun TransactionFormError.hasError(): Boolean =
-    title != null || category != null || amount != null
-

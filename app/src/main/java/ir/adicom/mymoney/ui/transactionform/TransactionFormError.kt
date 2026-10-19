@@ -5,3 +5,6 @@ data class TransactionFormError(
     val category: String? = null,
     val amount: String? = null
 )
+
+fun TransactionFormError.hasError(): Boolean =
+    title != null || category != null || amount != null
