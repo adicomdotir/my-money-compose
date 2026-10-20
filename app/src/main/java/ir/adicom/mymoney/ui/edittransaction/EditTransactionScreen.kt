@@ -36,7 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.domain.model.TransactionType
-import ir.adicom.mymoney.ui.addtransaction.hasError
 import ir.adicom.mymoney.ui.components.AppButton
 import ir.adicom.mymoney.ui.components.AppDatePickerDialog
 import ir.adicom.mymoney.ui.components.AppTextField
@@ -45,6 +44,7 @@ import ir.adicom.mymoney.ui.components.DateSelectedField
 import ir.adicom.mymoney.ui.transaction.OperationState
 import ir.adicom.mymoney.ui.transaction.TransactionEffect
 import ir.adicom.mymoney.ui.transactionform.TransactionFormError
+import ir.adicom.mymoney.ui.transactionform.hasError
 import ir.adicom.mymoney.ui.transactionform.validateForm
 
 @OptIn(ExperimentalMaterial3Api::class)
