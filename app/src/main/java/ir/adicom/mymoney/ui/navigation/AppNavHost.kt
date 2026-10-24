@@ -23,6 +23,7 @@ import ir.adicom.mymoney.ui.sample.DetailSampleScreen
 import ir.adicom.mymoney.ui.sample.SampleScreen
 import ir.adicom.mymoney.ui.sample.SampleViewModel
 import ir.adicom.mymoney.ui.setting.SettingScreen
+import ir.adicom.mymoney.ui.splash.SplashScreen
 import ir.adicom.mymoney.ui.transaction.TransactionScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +33,7 @@ fun AppNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Splash.route
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
@@ -153,6 +154,20 @@ fun AppNavHost(
             SettingScreen(
                 onBackClick = {
                     navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            Screen.Splash.route
+        ) {
+            SplashScreen(
+                onTimeout = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Splash.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
