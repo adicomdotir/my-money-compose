@@ -5,6 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +26,8 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,7 +48,7 @@ class SampleViewModel @Inject constructor() : ViewModel() {
             }
         }
 
-        flowSample3()
+        supervisorScopeSpl()
 
     }
 
@@ -119,6 +126,68 @@ class SampleViewModel @Inject constructor() : ViewModel() {
         state.value = 5
         viewModelScope.launch {
             events.emit(5)
+        }
+    }
+
+    fun withContextSpl() {
+        viewModelScope.launch {
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    println("Before delay")
+                    delay(500L)
+                    println("after delay")
+                    this.cancel()
+                    println("after cancel")
+                }
+
+                println("Result: $result")
+            } catch (e: CancellationException) {
+                println("${e.message}")
+            }
+        }
+    }
+
+    fun coroutineScopeSpl() {
+        viewModelScope.launch {
+            try {
+                coroutineScope {
+                    launch {
+                        throw RuntimeException("Error")
+                    }
+
+                    launch {
+                        delay(1_000)
+                        println("Second task")
+                    }
+                }
+            } catch (e: Exception) {
+                println(e.message)
+            }
+        }
+    }
+
+    fun supervisorScopeSpl() {
+        viewModelScope.launch {
+            supervisorScope {
+                val first = async {
+                    delay(100)
+                    throw Exception("alakjsdjflsad")
+                }
+
+                val second = async {
+                    delay(5000)
+                    "Success"
+                }
+
+
+                try {
+                    val results = awaitAll(first, second)
+                    println(results)
+                } catch (e: Exception) {
+                    // Handle the exception here (e.g., log it or show an error)
+                    println("One of the tasks failed: ${e.message}")
+                }
+            }
         }
     }
 
