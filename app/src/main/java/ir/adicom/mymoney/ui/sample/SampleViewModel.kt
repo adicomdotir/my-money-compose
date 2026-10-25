@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
@@ -49,6 +52,23 @@ class SampleViewModel @Inject constructor() : ViewModel() {
         }
 
         supervisorScopeSpl()
+
+        viewModelScope.launch {
+            flow {
+                emit(1)
+                delay(1000)
+                emit(2)
+                delay(1000)
+                emit(3)
+            }.flatMapConcat {
+                flow {
+                    delay(200)
+                    emit(it)
+                }
+            }.collect {
+                println(it)
+            }
+        }
 
     }
 

@@ -1,5 +1,6 @@
 package ir.adicom.mymoney.ui.sample
 
+import android.graphics.drawable.AnimatedImageDrawable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.ui.components.CustomAppBar
 
+/**
+ * A sample screen that displays a counter and a list of items.
+ *
+ * @param viewModel The ViewModel that manages the state of this screen.
+ * @param onBackClick Callback invoked when the back button is clicked.
+ * @param goDetail Callback invoked to navigate to the detail screen.
+ */
 @Composable
 fun SampleScreen(
     viewModel: SampleViewModel = hiltViewModel(),
@@ -141,6 +149,11 @@ fun SampleScreen(
     }
 }
 
+/**
+ * A sample list item that displays a string.
+ *
+ * @param item The string content to display.
+ */
 @Composable
 private fun SampleItem(
     item: String
