@@ -1,6 +1,8 @@
 package ir.adicom.mymoney.ui.report
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +67,21 @@ fun ReportScreen(
             }
 
             item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                ) {
+                    Box(modifier = Modifier.padding(16.dp)) {
+                        CustomChart(
+                            data = listOf(0.4f, 0.7f, 0.5f, 0.9f, 0.3f, 0.6f, 0.8f),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
+
+            item {
                 ReportSummary(
                     title = "Monthly",
                     amount = "4,000 $currency"
@@ -93,6 +113,51 @@ fun ReportScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+/**
+ * A custom bar chart layout.
+ *
+ * @param data A list of floats between 0.0 and 1.0 representing the relative height of each bar.
+ */
+@Composable
+private fun CustomChart(
+    data: List<Float>,
+    modifier: Modifier = Modifier
+) {
+    val barColor = MaterialTheme.colorScheme.primary
+    Layout(
+        modifier = modifier,
+        content = {
+            data.forEach { _ ->
+                Box(
+                    modifier = Modifier.background(
+                        color = barColor,
+                        shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
+                    )
+                )
+            }
+        }
+    ) { measurables, constraints ->
+        val spacing = 8.dp.roundToPx()
+        val totalSpacing = spacing * (data.size - 1)
+        val itemWidth = if (data.isNotEmpty()) {
+            (constraints.maxWidth - totalSpacing) / data.size
+        } else 0
+
+        val placeables = measurables.mapIndexed { index, measurable ->
+            val itemHeight = (constraints.maxHeight * data[index]).toInt()
+            measurable.measure(Constraints.fixed(itemWidth, itemHeight))
+        }
+
+        layout(constraints.maxWidth, constraints.maxHeight) {
+            var xPosition = 0
+            placeables.forEach { placeable ->
+                placeable.placeRelative(x = xPosition, y = constraints.maxHeight - placeable.height)
+                xPosition += itemWidth + spacing
             }
         }
     }
