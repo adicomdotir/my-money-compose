@@ -1,39 +1,23 @@
 package ir.adicom.mymoney.ui.transaction
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,8 +27,7 @@ import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppIconButton
 import ir.adicom.mymoney.utils.DateUtils
 
-
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionScreen(
     modifier: Modifier = Modifier,
@@ -55,79 +38,130 @@ fun TransactionScreen(
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
 
+    // Memoize the balance calculation
+    val balance = remember(uiState.transactions) {
+        uiState.transactions.calculateBalance()
+    }
+
+    val isDeleting = operationState is OperationState.Deleting
+
     Scaffold(
+        modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Transactions")
-                }
-            )
+            TopAppBar(title = { Text("Transactions") })
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { onOpenAdd() },
-                icon = {
-                    Icon(Icons.Outlined.Add, contentDescription = null)
-                },
+                onClick = onOpenAdd,
+                icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
                 text = { Text("Add Transaction") }
             )
         }
-    ) {
-
-
+    ) { innerPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-                .padding(16.dp),
+                .padding(innerPadding)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Balance")
-                Text("$ ${uiState.transactions.calculateBalance()}")
-            }
-            Text("This Month")
-            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+            BalanceSection(balance = balance)
 
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-            if (!uiState.error.isNullOrBlank()) {
-                Text("${uiState.error}")
-            } else
-
-                if (uiState.isLoading) {
-                    CircularProgressIndicator()
-                } else
-
-                    if (uiState.transactions.isNotEmpty()) {
-                        LazyColumn(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            items(uiState.transactions) { it ->
-                                TransactionItem(
-                                    transaction = it,
-                                    onClick = {
-                                        viewModel.onEvent(TransactionEvent.DeleteTransaction(it))
-                                    },
-                                    onDetailClick = { id ->
-                                        onDetailClick(id)
-                                    },
-                                    deleteEnabled = operationState !is OperationState.Deleting
-                                )
-                            }
-                        }
-                    } else {
-                        Text("No Content")
+            Box(modifier = Modifier.weight(1f)) {
+                when {
+                    !uiState.error.isNullOrBlank() -> {
+                        ErrorState(message = uiState.error!!)
                     }
 
-            when (val operation = operationState) {
-                OperationState.Idle -> Unit
-                OperationState.Adding -> CircularProgressIndicator()
-                OperationState.Deleting -> CircularProgressIndicator()
-                OperationState.Updating -> CircularProgressIndicator()
-                is OperationState.Error -> Text(operation.message)
+                    uiState.isLoading -> {
+                        LoadingState()
+                    }
+
+                    uiState.transactions.isEmpty() -> {
+                        EmptyState(onAddClick = onOpenAdd)
+                    }
+
+                    else -> {
+                        TransactionList(
+                            transactions = uiState.transactions,
+                            deleteEnabled = !isDeleting,
+                            onDeleteClick = { viewModel.onEvent(TransactionEvent.DeleteTransaction(it)) },
+                            onItemClick = onDetailClick
+                        )
+                    }
+                }
+
+                // Global operation progress overlay
+                (operationState as? OperationState.Adding)?.let {
+                    OperationOverlay()
+                }
+                (operationState as? OperationState.Updating)?.let {
+                    OperationOverlay()
+                }
+                (operationState as? OperationState.Deleting)?.let {
+                    OperationOverlay()
+                }
+                (operationState as? OperationState.Error)?.let {
+                    ErrorBanner(message = it.message)
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun BalanceSection(balance: Double, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = "Balance",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = "$${balance}",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "This Month",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun TransactionList(
+    transactions: List<Transaction>,
+    deleteEnabled: Boolean,
+    onDeleteClick: (Transaction) -> Unit,
+    onItemClick: (Long) -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 8.dp,
+            bottom = 96.dp // avoid FAB overlap
+        ),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(
+            items = transactions,
+            key = { it.id }
+        ) { transaction ->
+            TransactionItem(
+                transaction = transaction,
+                deleteEnabled = deleteEnabled,
+                onClick = { onItemClick(transaction.id) },
+                onDeleteClick = { onDeleteClick(transaction) }
+            )
         }
     }
 }
@@ -135,85 +169,193 @@ fun TransactionScreen(
 @Composable
 fun TransactionItem(
     transaction: Transaction,
-    onClick: () -> Unit,
     deleteEnabled: Boolean,
-    onDetailClick: (Long) -> Unit,
+    onClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ListItem(
+    Surface(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.medium)
-            .clickable { onDetailClick(transaction.id) }
-            .semantics(mergeDescendants = true) {},
-        leadingContent = {
+            .clickable(onClick = onClick),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             CategoryAvatar(category = transaction.category)
-        },
-        headlineContent = {
-            Text(
-                text = transaction.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        supportingContent = {
-            Text(
-                text = transaction.category,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
-        trailingContent = {
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = transaction.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = transaction.category,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 Text(
                     text = transaction.formattedAmount,
                     style = MaterialTheme.typography.titleMedium,
-                    color = transaction.amountColor,
+                    fontWeight = FontWeight.SemiBold,
+                    color = transaction.amountColor
                 )
                 Text(
                     text = DateUtils.convertTimestampToShamsi(transaction.timestamp),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        },
-    )
 
-    // Delete action as a separate, discoverable affordance
-    AppIconButton(
-        icon = Icons.Outlined.Delete,
-        contentDescription = "Delete ${transaction.title}",
-        enabled = deleteEnabled,
-        tint = MaterialTheme.colorScheme.error,
-        onClick = onClick,
-        modifier = Modifier.padding(start = 16.dp, end = 8.dp),
-    )
-}
-
-@Composable
-private fun CategoryAvatar(category: String) {
-    Surface(
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        modifier = Modifier.size(40.dp),
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = category.take(1).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            AppIconButton(
+                icon = Icons.Outlined.Delete,
+                contentDescription = "Delete ${transaction.title}",
+                enabled = deleteEnabled,
+                tint = MaterialTheme.colorScheme.error,
+                onClick = onDeleteClick
             )
         }
     }
 }
 
-private val Transaction.amountColor: Color
+@Composable
+private fun CategoryAvatar(category: String, modifier: Modifier = Modifier) {
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        modifier = modifier.size(40.dp)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = category.take(1).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoadingState(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun EmptyState(onAddClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Settings,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = "No transactions yet",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = "Your transactions will appear here",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onAddClick) {
+            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Add Transaction")
+        }
+    }
+}
+
+@Composable
+private fun ErrorState(message: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+}
+
+@Composable
+private fun OperationOverlay(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 6.dp
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                Text("Please wait…", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorBanner(message: String, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        color = MaterialTheme.colorScheme.errorContainer,
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Text(
+            text = message,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onErrorContainer
+        )
+    }
+}
+
+/* -------------------- Extensions -------------------- */
+
+private val Transaction.amountColor
     get() = when (type) {
         TransactionType.INCOME -> Color.Green
         TransactionType.EXPENSE -> Color.Red

@@ -1,6 +1,11 @@
 package ir.adicom.mymoney
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.zip
 import org.junit.Test
 
 class CoroutineTest {
@@ -233,5 +238,60 @@ class CoroutineTest {
             val result = transactions.await()
             println(result)
         }
+    }
+
+    @Test
+    fun testCancellation12() = runBlocking {
+
+        launch {
+            try {
+                delay(5_000)
+            } catch (e: Exception) {
+                println("Caught ${e.message}")
+            }
+
+            println("Finished")
+        }.also {
+            delay(200)
+            it.cancelAndJoin()
+        }
+
+        println("end".uppercase())
+
+    }
+
+    @Test
+    fun `test zip & combine`() = runBlocking {
+        val flowA = flowOf(1, 2, 3)
+        val flowB = flowOf("A", "B")
+
+        println("zip".uppercase())
+        flowA.zip(flowB) { a, b ->
+            "$a$b"
+        }.collect {
+            println(it)
+        }
+
+
+        println("combine".uppercase())
+        combine(flowA, flowB) {a, b ->
+            "$a$b"
+        }.collect {
+            println(it)
+        }
+    }
+
+    @Test
+    fun testZipWithDelay() = runBlocking {
+        val numbers = flowOf(1, 2, 3)
+            .onEach { delay(100) }
+        println("1")
+
+        val letters = flowOf("A", "B", "C")
+            .onEach { delay(300) }
+
+        println("2")
+        numbers.zip(letters) { n, l -> "$n$l" }
+            .collect { println(it) }
     }
 }
