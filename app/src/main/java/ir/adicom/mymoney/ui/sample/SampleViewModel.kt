@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
@@ -67,6 +68,11 @@ class SampleViewModel @Inject constructor() : ViewModel() {
                 }
             }.collect {
                 println(it)
+            }
+
+            flowOf('a', 'b', 'c').collectLatest { value ->
+                delay(500L)
+                println("$value")
             }
         }
 

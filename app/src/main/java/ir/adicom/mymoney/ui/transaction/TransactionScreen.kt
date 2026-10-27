@@ -12,7 +12,9 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ir.adicom.mymoney.domain.model.Transaction
 import ir.adicom.mymoney.domain.model.TransactionType
 import ir.adicom.mymoney.ui.components.AppIconButton
+import ir.adicom.mymoney.ui.components.DeleteConfirmDialog
 import ir.adicom.mymoney.utils.DateUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,6 +40,8 @@ fun TransactionScreen(
 ) {
     val uiState by viewModel.state.collectAsStateWithLifecycle()
     val operationState by viewModel.operationState.collectAsStateWithLifecycle()
+
+    var transactionToDelete by remember { mutableStateOf<Transaction?>(null) }
 
     // Memoize the balance calculation
     val balance = remember(uiState.transactions) {
@@ -85,7 +90,7 @@ fun TransactionScreen(
                         TransactionList(
                             transactions = uiState.transactions,
                             deleteEnabled = !isDeleting,
-                            onDeleteClick = { viewModel.onEvent(TransactionEvent.DeleteTransaction(it)) },
+                            onDeleteClick = { transactionToDelete = it },
                             onItemClick = onDetailClick
                         )
                     }
@@ -106,6 +111,20 @@ fun TransactionScreen(
                 }
             }
         }
+    }
+
+    transactionToDelete?.let { transaction ->
+        DeleteConfirmDialog(
+            title = "Delete transaction?",
+            message = "Are you sure you want to delete \"${transaction.title}\"? " +
+                    "This action cannot be undone.",
+            isLoading = isDeleting,
+            onConfirm = {
+                viewModel.onEvent(TransactionEvent.DeleteTransaction(transaction))
+                transactionToDelete = null
+            },
+            onDismiss = { transactionToDelete = null }
+        )
     }
 }
 
