@@ -61,6 +61,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.60.1")
