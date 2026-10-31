@@ -42,7 +42,8 @@ enum class DrawerItem {
     Report,
     Setting,
     Transaction,
-    Sample
+    Sample,
+    Categories
 }
 
 @Composable
@@ -70,6 +71,14 @@ fun HomeScreen(
                         .align(CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(26.dp))
+                Text(
+                    "Categories",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable(onClick = {
+                            onDrawerClick(DrawerItem.Categories)
+                        })
+                )
                 Text(
                     "Report",
                     modifier = Modifier

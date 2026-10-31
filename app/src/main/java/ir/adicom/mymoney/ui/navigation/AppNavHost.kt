@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import ir.adicom.mymoney.ui.addtransaction.AddTransactionScreen
+import ir.adicom.mymoney.ui.category.CategoryScreen
 import ir.adicom.mymoney.ui.detail.TransactionDetailScreen
 import ir.adicom.mymoney.ui.edittransaction.EditTransactionScreen
 import ir.adicom.mymoney.ui.home.DrawerItem
@@ -39,6 +40,7 @@ fun AppNavHost(
             HomeScreen(
                 onDrawerClick = {
                     when (it) {
+                        DrawerItem.Categories -> navController.navigate(Screen.Categories.route)
                         DrawerItem.Report -> navController.navigate(Screen.Report.route)
                         DrawerItem.Setting -> navController.navigate(Screen.Setting.route)
                         DrawerItem.Transaction -> navController.navigate(Screen.Transaction.route)
@@ -46,6 +48,10 @@ fun AppNavHost(
                     }
                 },
             )
+        }
+
+        composable(Screen.Categories.route) {
+            CategoryScreen()
         }
 
         composable(Screen.Transaction.route) {

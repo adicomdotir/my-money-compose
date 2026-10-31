@@ -2,6 +2,8 @@ package ir.adicom.mymoney
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,8 +29,10 @@ class MyViewModel(private val repo: UserRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+
     fun loadData() {
         viewModelScope.launch {
+
             _uiState.value = UiState.Loading
             try {
                 val user = repo.getUser()

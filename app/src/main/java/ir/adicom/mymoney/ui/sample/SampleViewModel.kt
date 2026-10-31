@@ -11,6 +11,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +41,10 @@ class SampleViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(SampleUiState())
     val uiState: StateFlow<SampleUiState> = _uiState.asStateFlow()
 
+    val events = MutableSharedFlow<String>(
+        replay = 0,
+        extraBufferCapacity = 0
+    )
 
     init {
         Log.e("TAG", "Init $this")
@@ -52,9 +57,23 @@ class SampleViewModel @Inject constructor() : ViewModel() {
             }
         }
 
-        supervisorScopeSpl()
+//        supervisorScopeSpl()
 
         viewModelScope.launch {
+            val user = async {
+                getUser()
+            }
+
+            val transactions = async {
+                getTransactions()
+            }
+
+            val userResult = user.await()
+            println("get users")
+            val transactionResult = transactions.await()
+
+
+
             flow {
                 emit(1)
                 delay(1000)
@@ -77,6 +96,11 @@ class SampleViewModel @Inject constructor() : ViewModel() {
         }
 
     }
+
+    suspend fun getUser(): Int {
+        throw Exception("asdfsaf")
+    }
+    suspend fun getTransactions() {}
 
     override fun onCleared() {
         super.onCleared()

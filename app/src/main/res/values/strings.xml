@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">My Money</string>
+    <string name="categories_title">دسته‌بندی‌ها</string>
+    <string name="categories_count">%1$d مورد</string>
+    <string name="add_category">افزودن دسته‌بندی</string>
+
+    <string name="no_categories_title">دسته‌بندی وجود ندارد</string>
+    <string name="no_categories_message">اولین دسته‌بندی خود را اضافه کنید</string>
+
+    <string name="delete_category_title">حذف دسته‌بندی؟</string>
+    <string name="delete_category_message">«%1$s» حذف شود؟ این عملیات قابل بازگشت نیست.</string>
+    <string name="delete_category_cd">حذف دسته‌بندی %1$s</string>
+    <string name="edit_category_cd">ویرایش دسته‌بندی %1$s</string>
+    <string name="dismiss_error">بستن خطا</string>
 </resources>

@@ -1,303 +1,324 @@
 package ir.adicom.mymoney.ui.category
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ir.adicom.mymoney.R
 import ir.adicom.mymoney.data.entity.Category
+import ir.adicom.mymoney.ui.components.AppIconButton
+import ir.adicom.mymoney.ui.components.DeleteConfirmDialog
 
-
-/**
- * CategoryScreen - صفحه دسته‌بندی
- */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
-    viewModel: CategoryViewModel = hiltViewModel()
+    modifier: Modifier = Modifier,
+    viewModel: CategoryViewModel = hiltViewModel(),
 ) {
-    // State Management
-    val categories by viewModel.categories.collectAsState(emptyList())
-    val uiState by viewModel.uiState.collectAsState()
+    val categories by viewModel.categories.collectAsStateWithLifecycle(emptyList())
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    var showFormDialog by remember { mutableStateOf(false) }
-    var isEditMode by remember { mutableStateOf(false) }
+    // Dialog / pending-delete state — local to the screen, reset on dispose
+    var showFormDialog by rememberSaveable { mutableStateOf(false) }
+    var categoryPendingDelete by remember { mutableStateOf<Category?>(null) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // Header
-        Row(
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.categories_title),
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                actions = {
+                    Text(
+                        text = stringResource(R.string.categories_count, categories.size),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                }
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    viewModel.clearSelection()
+                    showFormDialog = true
+                },
+                icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                text = { Text(stringResource(R.string.add_category)) }
+            )
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Text(
-                text = "${categories.size} مورد",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = "دسته‌بندی‌ها",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
-            IconButton(onClick = {
-                showFormDialog = true
-            }) {
-                Icon(Icons.Default.Add, "")
+            uiState.errorMessage?.let { message ->
+                ErrorBanner(
+                    message = message,
+                    onDismiss = viewModel::clearError,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
             }
-        }
 
-        // Error Message
-        if (uiState.errorMessage != null) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.errorContainer)
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "✕",
-                        modifier = Modifier
-                            .clickable {
-                                viewModel.clearError()
-                            }
-                            .padding(8.dp),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                    Text(
-                        text = uiState.errorMessage!!,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-
-        // Loading Indicator
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (categories.isEmpty()) {
-            // Empty State
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 48.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "دسته‌بندی وجود ندارد",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "اولین دسته‌بندی خود را اضافه کنید",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            // Categories List
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    categories,
-                    key = { it.id }
-                ) { category ->
-                    CategoryListItem(
-                        category = category,
-                        onEdit = {
-                            viewModel.selectCategory(category.id)
-                            isEditMode = true
+            Box(modifier = Modifier.weight(1f)) {
+                when {
+                    uiState.isLoading -> LoadingState()
+                    categories.isEmpty() -> EmptyState(
+                        onAddClick = {
+                            viewModel.clearSelection()
                             showFormDialog = true
-                        },
-                        onDelete = {
-                            viewModel.deleteCategory(category)
                         }
                     )
+                    else -> CategoryList(
+                        categories = categories,
+                        onEdit = { category ->
+                            viewModel.selectCategory(category.id)
+                            showFormDialog = true
+                        },
+                        onDeleteClick = { categoryPendingDelete = it }
+                    )
                 }
             }
         }
     }
 
-    // Floating Action Button
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.BottomStart
-    ) {
-        FloatingActionButton(
-            onClick = {
-                isEditMode = false
-                viewModel.clearSelection()
-                showFormDialog = true
+    // ---------- Delete confirmation ----------
+    categoryPendingDelete?.let { category ->
+        DeleteConfirmDialog(
+            title = stringResource(R.string.delete_category_title),
+            message = stringResource(R.string.delete_category_message, category.title),
+            isLoading = uiState.isLoading,
+            onConfirm = {
+                viewModel.deleteCategory(category)
+                categoryPendingDelete = null
             },
-            shape = CircleShape
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "اضافه کردن"
-            )
-        }
+            onDismiss = { categoryPendingDelete = null }
+        )
     }
 
-    // Form Dialog
+    // ---------- Add / Edit form dialog ----------
     if (showFormDialog) {
         CategoryFormDialog(
             category = uiState.selectedCategory,
-            isEditMode = isEditMode,
+            isEditMode = uiState.selectedCategory != null,
             onDismiss = {
+                showFormDialog = false
                 viewModel.clearSelection()
             },
             onSave = { title, color ->
-                if (isEditMode && uiState.selectedCategory != null) {
-                    viewModel.updateCategory(uiState.selectedCategory!!.id, title, color)
-                } else {
-                    viewModel.addCategory(title, color)
-                }
+                uiState.selectedCategory
+                    ?.let { viewModel.updateCategory(it.id, title, color) }
+                    ?: viewModel.addCategory(title, color)
+                showFormDialog = false
                 viewModel.clearSelection()
             }
         )
     }
 }
 
-/**
- * CategoryListItem - یک مورد دسته‌بندی
- */
+/* ==================== Sub-composables ==================== */
+
 @Composable
-fun CategoryListItem(
-    category: Category,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+private fun CategoryList(
+    categories: List<Category>,
+    onEdit: (Category) -> Unit,
+    onDeleteClick: (Category) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        shape = RoundedCornerShape(12.dp)
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 8.dp,
+            bottom = 96.dp // FAB safe area
+        ),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Actions
-            Row {
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "حذف",
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-
-                IconButton(
-                    onClick = onEdit,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "ویرایش",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // نام
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = category.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "شناسه: ${category.id}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            // رنگ Box
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = Color(android.graphics.Color.parseColor(category.color)),
-                        shape = RoundedCornerShape(8.dp)
-                    )
+        items(categories, key = { it.id }) { category ->
+            CategoryListItem(
+                category = category,
+                onEdit = { onEdit(category) },
+                onDeleteClick = { onDeleteClick(category) }
             )
         }
     }
 }
+
+@Composable
+fun CategoryListItem(
+    category: Category,
+    onEdit: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            CategoryColorDot(color = category.color)
+
+            // Title + optional subtitle
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = category.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            // Edit
+            AppIconButton(
+                icon = Icons.Outlined.Edit,
+                contentDescription = stringResource(R.string.edit_category_cd, category.title),
+                tint = MaterialTheme.colorScheme.primary,
+                size = AppIconButtonSize.Small,
+                onClick = onEdit
+            )
+
+            // Delete
+            AppIconButton(
+                icon = Icons.Outlined.Delete,
+                contentDescription = stringResource(R.string.delete_category_cd, category.title),
+                tint = MaterialTheme.colorScheme.error,
+                size = AppIconButtonSize.Small,
+                onClick = onDeleteClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryColorDot(color: String, modifier: Modifier = Modifier) {
+    val parsed = remember(color) { color.toColorSafely() }
+    Box(
+        modifier = modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(parsed)
+    )
+}
+
+@Composable
+private fun LoadingState(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun EmptyState(
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Category,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.no_categories_title),
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.no_categories_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = onAddClick) {
+            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.add_category))
+        }
+    }
+}
+
+@Composable
+private fun ErrorBanner(
+    message: String,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.errorContainer
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.weight(1f)
+            )
+            AppIconButton(
+                icon = Icons.Outlined.Close,
+                contentDescription = stringResource(R.string.dismiss_error),
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+                size = AppIconButtonSize.Small,
+                onClick = onDismiss
+            )
+        }
+    }
+}
+
+/* ==================== Safe color parsing ==================== */
+
+private fun String.toColorSafely(fallback: Color = Color.Gray): Color =
+    runCatching { Color(this.toColorInt()) }.getOrDefault(fallback)
